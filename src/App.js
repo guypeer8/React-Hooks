@@ -1,28 +1,31 @@
-import React, { Component } from 'react';
-import logo from './logo.svg';
+import React, { useReducer } from 'react';
 import './App.css';
 
-class App extends Component {
-  render() {
+import TodoInput from './Components/TodoInput';
+import Todos from './Components/Todos';
+import Filters from './Components/Filters';
+
+import AppContext from './Contexts/AppContext';
+import FiltersContext from './Contexts/FiltersContext';
+
+import todosReducer from './Reducers/TodosReducer';
+
+export const App = ({ match: { params } }) => {
+    const [todos, dispatch] = useReducer(todosReducer, []);
+
     return (
-      <div className="App">
-        <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <p>
-            Edit <code>src/App.js</code> and save to reload.
-          </p>
-          <a
-            className="App-link"
-            href="https://reactjs.org"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Learn React
-          </a>
-        </header>
-      </div>
+        <AppContext.Provider value={dispatch}>
+            <FiltersContext.Provider value={params.filter || 'all'}>
+                <div className='App'>
+                    <header className='App-header'>
+                        <TodoInput />
+                        <Todos todos={todos} />
+                        <Filters />
+                    </header>
+                </div>
+            </FiltersContext.Provider>
+        </AppContext.Provider>
     );
-  }
 }
 
-export default App;
+
