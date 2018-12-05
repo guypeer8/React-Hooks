@@ -3,15 +3,16 @@ import AppContext from '../Contexts/AppContext';
 import Todo from "./Todo";
 
 const Todos = () => {
-    const {todos, filter} = useContext(AppContext);
+    const context =  useContext(AppContext);
+    const { todos, filter } = context.data;
     const visibleTodos = getVisibleTodos(todos, filter);
 
     return (
-        <div>
+        <ul className='Todos-Container'>
             {visibleTodos.map(todo =>
                 <Todo key={todo.id} {...todo} />
             )}
-        </div>
+        </ul>
     );
 };
 

@@ -17,20 +17,24 @@ export const App = ({ match: { params } }) => {
         {id: null, text: ''}
     );
 
-    return (
-        <AppContext.Provider value={{
-            dispatchTodos,
-            dispatchTodoInput,
+    const context = {
+        data: {
             todoInput,
             todos,
             filter: params.filter || 'all',
-        }}>
+        },
+        methods: {
+            dispatchTodos,
+            dispatchTodoInput,
+        },
+    };
+
+    return (
+        <AppContext.Provider value={context}>
             <div className='App'>
-                <header className='App-header'>
-                    <TodoInput />
-                    <Todos />
-                    <Filters />
-                </header>
+                <TodoInput />
+                <Todos />
+                <Filters />
             </div>
         </AppContext.Provider>
     );

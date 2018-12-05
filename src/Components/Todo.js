@@ -3,7 +3,8 @@ import PropTypes from "prop-types";
 import AppContext from '../Contexts/AppContext';
 
 const Todo = ({ id, text, completed }) => {
-    const { dispatchTodos, dispatchTodoInput } = useContext(AppContext);
+    const context = useContext(AppContext);
+    const { dispatchTodos, dispatchTodoInput } = context.methods;
 
     const onToggleTodo = () => dispatchTodos({
         type: 'TOGGLE_TODO',

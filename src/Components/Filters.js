@@ -5,10 +5,11 @@ import AppContext from "../Contexts/AppContext";
 const filters = ['all', 'active', 'completed'];
 
 const Filters = () => {
-    const { dispatchTodos, todos, filter } = useContext(AppContext);
+    const context = useContext(AppContext);
+    const { todos, filter } = context.data;
+    const { dispatchTodos } = context.methods;
 
-    const isActive = aFilter =>
-        aFilter === filter;
+    const isActive = aFilter => aFilter === filter;
 
     const navigate = (e, filter) =>
         isActive(filter) && e.preventDefault();
@@ -23,28 +24,31 @@ const Filters = () => {
         type: 'DELETE_COMPLETED',
     });
 
+    const active_todos = countActiveTodos();
+    const completed_todos = countCompletedTodos();
+
     return (
-        <div>
-            <div>
+        <div className='Footer'>
+            <div className='Filters'>
                 {filters.map(filter => (
                     <NavLink
                         key={filter}
                         to={`/${filter}`}
                         onClick={e => navigate(e, filter)}
-                        style={{
-                            color: isActive(filter) ? 'orange' : ''
-                        }}
+                        className={isActive(filter) ? 'Active' : ''}
                     >
-                        {filter + ' '}
+                        {filter}
                     </NavLink>
                 ))}
             </div>
-            <div>
-                <p>Active Todos: {countActiveTodos()}</p>
-                <p>Completed Todos: {countCompletedTodos()}</p>
+            <div className='Info'>
+                <p>Active Todos: {active_todos}</p>
+                <p>Completed Todos: {completed_todos}</p>
+            </div>
+            <div className='Actions'>
                 <button
                     onClick={deleteCompleted}
-                    disabled={countActiveTodos() === 0}
+                    disabled={completed_todos === 0}
                 >
                     Delete Completed
                 </button>

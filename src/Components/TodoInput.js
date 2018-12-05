@@ -9,7 +9,10 @@ const createTodo = value => ({
 });
 
 const TodoInput = () => {
-    const { todoInput, dispatchTodos, dispatchTodoInput } = useContext(AppContext);
+    const context = useContext(AppContext);
+    const { todoInput } = context.data;
+    const { dispatchTodos, dispatchTodoInput } = context.methods;
+
     const $inputEl = useRef(null);
 
     const createNewTodo = () => {
@@ -48,8 +51,9 @@ const TodoInput = () => {
     useEffect(focusInput);
 
     return (
-        <div>
+        <div className='Todo-Input'>
             <input
+                type='text'
                 placeholder='Add Todo'
                 value={todoInput.text}
                 onChange={onChange}

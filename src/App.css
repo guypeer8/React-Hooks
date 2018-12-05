@@ -1,13 +1,5 @@
 .App {
   text-align: center;
-}
-
-.App-logo {
-  animation: App-logo-spin infinite 20s linear;
-  height: 40vmin;
-}
-
-.App-header {
   background-color: #282c34;
   min-height: 100vh;
   display: flex;
@@ -18,15 +10,67 @@
   color: white;
 }
 
-.App-link {
-  color: #61dafb;
+.App .Todo-Input input[type='text'] {
+  border: 0;
+  outline: none;
+  padding: 10px;
+  font-size: 18px;
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.App .Todo-Input button {
+  outline: none;
+  border: none;
+  background: #010202;
+  padding: 10px;
+  color: white;
+  font-size: 18px;
+  cursor: pointer;
+}
+.App .Todo-Input button:hover {
+  opacity: 0.88;
+}
+
+.App .Todos-Container {
+  padding-left: 0;
+  list-style-type: none;
+  font-size: 22px;
+}
+
+.App .Footer .Filters {
+  font-size: 22px;
+}
+
+.App .Footer .Filters a {
+  margin-right: 18px;
+  color: white;
+}
+
+.App .Footer .Filters a.Active {
+  color: #010202;
+}
+
+.App .Footer .Info {
+  font-size: 15px;
+  margin-top: 30px;
+}
+
+.App .Footer .Info p {
+  margin: 5px;
+}
+
+.App .Footer .Actions button {
+  border: 0;
+  outline: 0;
+  font-size: 13px;
+  padding: 5px 15px;
+  cursor: pointer;
+}
+.App .Footer .Actions button:hover {
+  opacity: 0.88;
+}
+.App .Footer .Actions button:disabled {
+  cursor: not-allowed;
+}
+.App .Footer .Actions button:disabled:hover {
+  opacity: 1;
 }
