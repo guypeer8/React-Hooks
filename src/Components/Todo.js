@@ -3,12 +3,20 @@ import PropTypes from "prop-types";
 import AppContext from '../Contexts/AppContext';
 
 const Todo = ({ id, text, completed }) => {
-    const dispatch = useContext(AppContext);
+    const { dispatchTodos, dispatchTodoInput } = useContext(AppContext);
 
-    const onToggleTodo = () => dispatch({
+    const onToggleTodo = () => dispatchTodos({
         type: 'TOGGLE_TODO',
         id,
     });
+
+    const onTextClick = () => {
+        !completed && dispatchTodoInput({
+            type: 'START_EDIT',
+            id,
+            text,
+        });
+    };
 
     return (
         <li>
@@ -21,6 +29,7 @@ const Todo = ({ id, text, completed }) => {
                 style={{
                     textDecoration: completed ? 'line-through' : 'none'
                 }}
+                onClick={onTextClick}
             >
                 {text}
             </span>

@@ -1,30 +1,18 @@
 import React, { useContext } from 'react';
-import PropTypes from "prop-types";
-import FiltersContext from '../Contexts/FiltersContext';
+import AppContext from '../Contexts/AppContext';
 import Todo from "./Todo";
 
-const Todos = ({ todos }) => {
-    const filter = useContext(FiltersContext);
+const Todos = () => {
+    const {todos, filter} = useContext(AppContext);
     const visibleTodos = getVisibleTodos(todos, filter);
 
     return (
         <div>
-            {visibleTodos.map(todo => (
-                <Todo
-                    key={todo.id}
-                    {...todo}
-                />
-            ))}
+            {visibleTodos.map(todo =>
+                <Todo key={todo.id} {...todo} />
+            )}
         </div>
     );
-};
-
-Todos.defaultProps = {
-    todos: [],
-};
-
-Todos.propTypes = {
-    todos: PropTypes.array.isRequired,
 };
 
 const getVisibleTodos = (todos, filter) => {
@@ -36,6 +24,6 @@ const getVisibleTodos = (todos, filter) => {
         default:
             return todos;
     }
-}
+};
 
 export default Todos;

@@ -6,24 +6,32 @@ import Todos from './Components/Todos';
 import Filters from './Components/Filters';
 
 import AppContext from './Contexts/AppContext';
-import FiltersContext from './Contexts/FiltersContext';
 
 import todosReducer from './Reducers/TodosReducer';
+import todoInputReducer from './Reducers/TodoInputReducer';
 
 export const App = ({ match: { params } }) => {
-    const [todos, dispatch] = useReducer(todosReducer, []);
+    const [todos, dispatchTodos] = useReducer(todosReducer, []);
+    const [todoInput, dispatchTodoInput] = useReducer(
+        todoInputReducer,
+        {id: null, text: ''}
+    );
 
     return (
-        <AppContext.Provider value={dispatch}>
-            <FiltersContext.Provider value={params.filter || 'all'}>
-                <div className='App'>
-                    <header className='App-header'>
-                        <TodoInput />
-                        <Todos todos={todos} />
-                        <Filters />
-                    </header>
-                </div>
-            </FiltersContext.Provider>
+        <AppContext.Provider value={{
+            dispatchTodos,
+            dispatchTodoInput,
+            todoInput,
+            todos,
+            filter: params.filter || 'all',
+        }}>
+            <div className='App'>
+                <header className='App-header'>
+                    <TodoInput />
+                    <Todos />
+                    <Filters />
+                </header>
+            </div>
         </AppContext.Provider>
     );
 }
