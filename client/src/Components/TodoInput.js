@@ -1,5 +1,5 @@
-import React, { useContext, useRef, useEffect } from 'react';
-import AppContext from '../Contexts/AppContext';
+import React, { useRef, useEffect } from 'react';
+import { getStore } from './Providers/Store';
 
 let nextTodoId = 1;
 const createTodo = value => ({
@@ -9,41 +9,44 @@ const createTodo = value => ({
 });
 
 const TodoInput = () => {
-    const context = useContext(AppContext);
-    const { todoInput } = context.data;
-    const { dispatchTodos, dispatchTodoInput } = context.methods;
+    const { state, dispatch } = getStore();
 
     const $inputEl = useRef(null);
 
     const createNewTodo = () => {
-        const text = todoInput.text.trim();
+        const text = state.todoInput.text.trim();
         if (!text) return;
 
-        if (todoInput.id) {
-            dispatchTodos({
+        (state.todoInput.id
+            ? dispatch.todos({
                 type: 'EDIT_TODO',
-                id: todoInput.id,
+                id: state.todoInput.id,
                 text,
-            });
-        }
-        else {
-            dispatchTodos({
+            })
+            : dispatch.todos({
                 type: 'ADD_TODO',
                 ...createTodo(text),
-            });
-        }
+            })
+        );
 
-        dispatchTodoInput({
+        dispatch.todoInput({
             type: 'CLEAR_TODO',
         });
 
         focusInput();
     };
 
-    const onChange = (e) => dispatchTodoInput({
+    const actionButtonText = `${state.todoInput.id ? 'Edit' : 'Add'} Todo`;
+
+    const onChange = (e) => dispatch.todoInput({
         type: 'CHANGE_TODO',
         text: e.target.value,
     });
+
+    const onKeyPress = (e) => (
+        (e.key === 'Enter')
+        && createNewTodo()
+    );
 
     const focusInput = () =>
         $inputEl.current.focus();
@@ -55,17 +58,13 @@ const TodoInput = () => {
             <input
                 type='text'
                 placeholder='Add Todo'
-                value={todoInput.text}
+                value={state.todoInput.text}
                 onChange={onChange}
-                onKeyPress={e =>
-                    (e.key === 'Enter') && createNewTodo()
-                }
+                onKeyPress={onKeyPress}
                 ref={$inputEl}
             />
-            <button
-                onClick={createNewTodo}
-            >
-                {todoInput.id ? 'Edit': 'Add'} Todo
+            <button onClick={createNewTodo}>
+                {actionButtonText}
             </button>
         </div>
     );

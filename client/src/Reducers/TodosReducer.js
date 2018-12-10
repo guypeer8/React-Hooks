@@ -18,6 +18,9 @@ const todosReducer = (todos = [], action) => {
                     : todo
             );
 
+        case 'DELETE_TODO':
+            return todos.filter(({id}) => id !== action.id);
+
         case 'DELETE_COMPLETED':
             return todos.filter(({completed}) => !completed);
 

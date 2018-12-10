@@ -10,20 +10,24 @@
   color: white;
 }
 
+.App .Todo-Input {
+  margin-bottom: 20px;
+}
+
 .App .Todo-Input input[type='text'] {
   border: 0;
   outline: none;
-  padding: 10px;
-  font-size: 18px;
+  padding: 15px 25px;
+  font-size: 20px;
 }
 
 .App .Todo-Input button {
   outline: none;
   border: none;
   background: #010202;
-  padding: 10px;
+  padding: 16px;
   color: white;
-  font-size: 18px;
+  font-size: 20px;
   cursor: pointer;
 }
 .App .Todo-Input button:hover {
@@ -31,9 +35,58 @@
 }
 
 .App .Todos-Container {
-  padding-left: 0;
+  width: 600px;
+  padding: 10px 30px;
   list-style-type: none;
   font-size: 22px;
+  max-height: 250px;
+  overflow: auto;
+  outline: 1px solid #4b5058;
+}
+
+.App .Todos-Container li {
+  text-align: left;
+  margin-top: 15px;
+}
+
+.App .Todos-Container li * {
+  display: inline-block;
+}
+
+.App .Todos-Container li > :first-child {
+  width: 60px;
+}
+.App .Todos-Container li > :nth-child(3) {
+  margin: 0 30px;
+}
+.App .Todos-Container .Todos-List li > :nth-child(2) {
+  vertical-align: middle;
+}
+.App .Todos-Container .Todos-List li > :nth-child(2) {
+  margin: 0 20px;
+  max-width: 120px;
+}
+.App .Todos-Container .Todos-List li > :nth-child(3) {
+  word-wrap: break-word;
+  max-width: 300px;
+  margin-left: 45px;
+}
+.App .Todos-Container li > :nth-child(4) {
+  float: right;
+}
+
+.App .Todos-Container li button {
+  cursor: pointer;
+  border: 0;
+  margin-right: 3px;
+  font-size: 14px;
+  height: 20px;
+  line-height: 20px;
+  padding-top: 2px;
+}
+
+.App .Todos-Container li button:hover {
+  opacity: 0.82;
 }
 
 .App .Footer .Filters {

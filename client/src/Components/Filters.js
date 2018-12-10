@@ -1,26 +1,25 @@
-import React, { useContext } from 'react';
+import React from 'react';
 import { NavLink } from 'react-router-dom';
-import AppContext from "../Contexts/AppContext";
+import { getStore } from './Providers/Store';
 
 const filters = ['all', 'active', 'completed'];
 
 const Filters = () => {
-    const context = useContext(AppContext);
-    const { todos, filter } = context.data;
-    const { dispatchTodos } = context.methods;
+    const { state, dispatch } = getStore();
 
-    const isActive = aFilter => aFilter === filter;
+    const isActive = aFilter =>
+        aFilter === state.filter;
 
     const navigate = (e, filter) =>
         isActive(filter) && e.preventDefault();
 
     const countActiveTodos = () =>
-        todos.filter(({completed}) => !completed).length;
+        state.todos.filter(({completed}) => !completed).length;
 
     const countCompletedTodos = () =>
-        todos.filter(({completed}) => completed).length;
+        state.todos.filter(({completed}) => completed).length;
 
-    const deleteCompleted = () => dispatchTodos({
+    const deleteCompleted = () => dispatch.todos({
         type: 'DELETE_COMPLETED',
     });
 
