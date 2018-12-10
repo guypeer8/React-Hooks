@@ -39,8 +39,8 @@ export const DELETE_TODO = gql`
 `;
 
 export const DELETE_COMPLETED_TODOS = gql`
-   mutation DELETE_COMPLETED_TODOS() {
-        deleteCompletedTodos(id: $id) { 
+   mutation DELETE_COMPLETED_TODOS {
+        deleteCompletedTodos { 
         
         }
    }  

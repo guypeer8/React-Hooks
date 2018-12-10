@@ -2,9 +2,9 @@ import React, {createContext, useContext, useReducer} from 'react';
 import todoInputReducer from "../../Reducers/TodoInputReducer";
 import todosReducer from "../../Reducers/TodosReducer";
 
-const StoreContext = createContext();
+const StoreContext = createContext(null);
 
-const StoreProvider = ({ children, routeParams, todosData }) => {
+const StoreProvider = ({ children, routeParams }) => {
     const [todos, dispatchTodos] = useReducer(
         todosReducer,
         []

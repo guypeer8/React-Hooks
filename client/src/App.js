@@ -21,5 +21,3 @@ export const App = ({ match: { params } }) => (
         </Store>
     </GraphQL>
 );
-
-

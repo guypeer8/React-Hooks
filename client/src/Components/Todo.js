@@ -41,14 +41,10 @@ const Todo = ({ id, text, completed, index }) => {
                 {text}
             </span>
             <span>
-                <button
-                    onClick={startEdit}
-                >
+                <button onClick={startEdit}>
                     <FaEdit/>
                 </button>
-                <button
-                    onClick={deleteTodo}
-                >
+                <button onClick={deleteTodo}>
                     <FaTimes/>
                 </button>
             </span>

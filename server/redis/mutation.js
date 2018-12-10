@@ -6,15 +6,15 @@ const client = require('./client');
 const addTodo = text => (
     new Promise((reject, resolve) => {
         const id = uuid();
-        const todoHash = {
+        const newTodo = {
             id,
             text,
             completed: false,
         };
-        const todoString = JSON.stringify(todoHash);
+        const todoString = JSON.stringify(newTodo);
 
         client.hset('todos', id, todoString, err =>
-            err ? reject(err) : resolve(todoHash)
+            err ? reject(err) : resolve(newTodo)
         );
     })
 );
@@ -43,17 +43,15 @@ const toggleTodo = id => (
     new Promise(async (reject, resolve) => {
         try {
             const todo = await TodoQuery.getTodo(id);
-            const toggledTodo = JSON.stringify({
+            const toggledTodo = {
                 ...todo,
                 completed: !todo.completed,
-            });
+            };
+            const todoString = JSON.stringify(toggledTodo);
 
-            client.hset('todos', id, toggledTodo, (err, todo) => {
-                if (err)
-                    return reject(err);
-
-                resolve(todo);
-            });
+            client.hset('todos', id, todoString, err =>
+                err ? reject(err) : resolve(toggledTodo)
+            );
         }
         catch (err) {
             reject(err);
@@ -65,7 +63,7 @@ const deleteTodo = id => (
     new Promise(async (reject, resolve) => {
         try {
             client.hdel('todos', id, err =>
-                err ? reject(err) : resolve()
+                err ? reject(err) : resolve({ id })
             );
         }
         catch (err) {
