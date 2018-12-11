@@ -1,5 +1,8 @@
 const todosReducer = (todos = [], action) => {
     switch (action.type) {
+        case 'APPEND_TODOS':
+            return [...todos, ...action.todos];
+
         case 'ADD_TODO':
             const { id, text, completed } = action;
             return [...todos, {id, text, completed}];

@@ -1,4 +1,4 @@
-import { gql } from 'graphql-tag';
+import gql from 'graphql-tag';
 
 export const GET_TODOS = gql`
     query GET_TODOS {
@@ -11,9 +11,9 @@ export const GET_TODOS = gql`
 `;
 
 export const GET_TODO = gql`
-    query GET_TODO {
-        todo($id: ID!) {  
-            $id,
+    query GET_TODO($id: ID!) {
+        todo(id: $id) {  
+            id,
             text,
             completed
         }

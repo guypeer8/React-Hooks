@@ -2,7 +2,6 @@ const {
     GraphQLObjectType,
     GraphQLNonNull,
     GraphQLString,
-    GraphQLBoolean,
     GraphQLID,
 } = require('graphql');
 
@@ -33,7 +32,6 @@ const Mutation = new GraphQLObjectType({
             type: TodoType,
             args: {
                 id: { type: GraphQLNonNull(GraphQLID) },
-                completed: { type: GraphQLNonNull(GraphQLBoolean) },
             },
             resolve: (_, { id }) =>
                 TodoMutation.toggleTodo(id),

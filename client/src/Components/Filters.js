@@ -1,6 +1,8 @@
 import React from 'react';
+import { Mutation } from 'react-apollo';
 import { NavLink } from 'react-router-dom';
 import { getStore } from './Providers/Store';
+import { DELETE_COMPLETED_TODOS } from '../GraphQL/Mutation';
 
 const filters = ['all', 'active', 'completed'];
 
@@ -18,10 +20,6 @@ const Filters = () => {
 
     const countCompletedTodos = () =>
         state.todos.filter(({completed}) => completed).length;
-
-    const deleteCompleted = () => dispatch.todos({
-        type: 'DELETE_COMPLETED',
-    });
 
     const active_todos = countActiveTodos();
     const completed_todos = countCompletedTodos();
@@ -45,12 +43,24 @@ const Filters = () => {
                 <p>Completed Todos: {completed_todos}</p>
             </div>
             <div className='Actions'>
-                <button
-                    onClick={deleteCompleted}
-                    disabled={completed_todos === 0}
-                >
-                    Delete Completed
-                </button>
+                <Mutation mutation={DELETE_COMPLETED_TODOS}>
+                    {(deleteCompleted, { loading }) =>
+                        <button
+                            onClick={() => {
+                                deleteCompleted();
+                                dispatch.todos({
+                                    type: 'DELETE_COMPLETED',
+                                });
+                            }}
+                            disabled={
+                                loading
+                                || (completed_todos === 0)
+                            }
+                        >
+                            Delete Completed
+                        </button>
+                    }
+                </Mutation>
             </div>
         </div>
     );

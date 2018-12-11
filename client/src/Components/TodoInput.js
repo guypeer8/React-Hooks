@@ -1,5 +1,7 @@
 import React, { useRef, useEffect } from 'react';
+import { Mutation } from 'react-apollo';
 import { getStore } from './Providers/Store';
+import { ADD_TODO, EDIT_TODO } from '../GraphQL/Mutation';
 
 let nextTodoId = 1;
 const createTodo = value => ({
@@ -10,22 +12,26 @@ const createTodo = value => ({
 
 const TodoInput = () => {
     const { state, dispatch } = getStore();
+    const { id, text } = state.todoInput;
 
     const $inputEl = useRef(null);
 
-    const createNewTodo = () => {
-        const text = state.todoInput.text.trim();
-        if (!text) return;
+    const setTodo = setTodoMutation => {
+        const _text = text.trim();
+        if (!_text)
+            return;
+
+        setTodoMutation();
 
         (state.todoInput.id
             ? dispatch.todos({
                 type: 'EDIT_TODO',
-                id: state.todoInput.id,
-                text,
+                id,
+                text: _text,
             })
             : dispatch.todos({
                 type: 'ADD_TODO',
-                ...createTodo(text),
+                ...createTodo(_text),
             })
         );
 
@@ -36,17 +42,12 @@ const TodoInput = () => {
         focusInput();
     };
 
-    const actionButtonText = `${state.todoInput.id ? 'Edit' : 'Add'} Todo`;
+    const actionButtonText = `${id ? 'Edit' : 'Add'} Todo`;
 
     const onChange = (e) => dispatch.todoInput({
         type: 'CHANGE_TODO',
         text: e.target.value,
     });
-
-    const onKeyPress = (e) => (
-        (e.key === 'Enter')
-        && createNewTodo()
-    );
 
     const focusInput = () =>
         $inputEl.current.focus();
@@ -54,19 +55,33 @@ const TodoInput = () => {
     useEffect(focusInput);
 
     return (
-        <div className='Todo-Input'>
-            <input
-                type='text'
-                placeholder='Add Todo'
-                value={state.todoInput.text}
-                onChange={onChange}
-                onKeyPress={onKeyPress}
-                ref={$inputEl}
-            />
-            <button onClick={createNewTodo}>
-                {actionButtonText}
-            </button>
-        </div>
+        <Mutation
+            mutation={id ? EDIT_TODO : ADD_TODO}
+            variables={{
+                text,
+                ...(id ? {id} : {})
+            }}
+        >
+            {(setTodoMutation, { loading }) => (
+                <div className='Todo-Input'>
+                    <input
+                        type='text'
+                        placeholder='Add Todo'
+                        value={text}
+                        onChange={onChange}
+                        onKeyPress={e => (
+                            (e.key === 'Enter')
+                            && setTodo(setTodoMutation)
+                        )}
+                        disabled={loading}
+                        ref={$inputEl}
+                    />
+                    <button onClick={() => setTodo(setTodoMutation)}>
+                        {actionButtonText}
+                    </button>
+                </div>
+            )}
+        </Mutation>
     );
 };
 

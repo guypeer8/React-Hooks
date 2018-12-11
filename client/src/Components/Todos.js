@@ -1,17 +1,21 @@
 import React from 'react';
-import { getStore } from './Providers/Store';
+import { Query } from 'react-apollo';
 import Todo from './Todo';
+import { getStore } from './Providers/Store';
+import { GET_TODOS } from '../GraphQL/Query';
+
+let fetched_todos = false;
 
 const Todos = () => {
-    const { state } = getStore();
+    const { state, dispatch } = getStore();
 
-    const visibleTodos = getVisibleTodos(state.todos, state.filter);
+    if (fetched_todos) {
+        const visibleTodos = getVisibleTodos(state.todos, state.filter);
 
-    if (visibleTodos.length > 0) {
         return (
             <ul className='Todos-Container'>
-                <TodosHeader />
                 <div className='Todos-List'>
+                    <TodosHeader />
                     {visibleTodos.map((todo, index) =>
                         <Todo
                             key={todo.id}
@@ -24,7 +28,23 @@ const Todos = () => {
         );
     }
 
-    return null;
+    return (
+        <Query query={GET_TODOS}>
+            {({ data: { todos }, loading, error }) => {
+                if (loading) return <div>Loading...</div>;
+                if (error) return <div>{error}</div>;
+
+                fetched_todos = true;
+
+                dispatch.todos({
+                    type: 'APPEND_TODOS',
+                    todos,
+                });
+
+                return null;
+            }}
+        </Query>
+    );
 };
 
 const TodosHeader = () => (

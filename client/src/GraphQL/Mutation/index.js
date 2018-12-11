@@ -1,4 +1,4 @@
-import { gql } from 'react-apollo';
+import gql from 'graphql-tag';
 
 export const ADD_TODO = gql`
     mutation ADD_TODO($text: String!) {
@@ -32,16 +32,20 @@ export const TOGGLE_TODO = gql`
 
 export const DELETE_TODO = gql`
    mutation DELETE_TODO($id: ID!) {
-        deleteTodo(id: $id) { 
-            
+        deleteTodo(id: $id) {
+            id,
+            text,
+            completed
         }
-   }  
+   }
 `;
 
 export const DELETE_COMPLETED_TODOS = gql`
    mutation DELETE_COMPLETED_TODOS {
-        deleteCompletedTodos { 
-        
+        deleteCompletedTodos {
+            id,
+            text,
+            completed
         }
-   }  
+   }
 `;

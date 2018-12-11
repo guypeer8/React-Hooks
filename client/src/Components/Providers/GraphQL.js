@@ -2,7 +2,7 @@ import React from 'react';
 import ApolloClient from 'apollo-boost';
 import { ApolloProvider } from 'react-apollo';
 
-const apolloClient = new ApolloClient({
+export const apolloClient = new ApolloClient({
     uri: `http://localhost:8001/api`,
 });
 

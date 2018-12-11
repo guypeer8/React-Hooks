@@ -99,3 +99,9 @@ module.exports = {
     deleteTodo,
     deleteCompletedTodos,
 };
+
+// addTodo('a');
+// addTodo('b');
+// addTodo('c');
+// addTodo('d');
+// addTodo('e');

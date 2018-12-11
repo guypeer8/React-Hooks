@@ -1,6 +1,6 @@
 import React, {createContext, useContext, useReducer} from 'react';
-import todoInputReducer from "../../Reducers/TodoInputReducer";
-import todosReducer from "../../Reducers/TodosReducer";
+import todoInputReducer from '../../Reducers/TodoInputReducer';
+import todosReducer from '../../Reducers/TodosReducer';
 
 const StoreContext = createContext(null);
 
