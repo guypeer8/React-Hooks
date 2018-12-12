@@ -24,6 +24,10 @@ const Filters = () => {
     const active_todos = countActiveTodos();
     const completed_todos = countCompletedTodos();
 
+    const postDeleteCompleted = () => dispatch.todos({
+        type: 'DELETE_COMPLETED',
+    });
+
     return (
         <div className='Footer'>
             <div className='Filters'>
@@ -43,19 +47,14 @@ const Filters = () => {
                 <p>Completed Todos: {completed_todos}</p>
             </div>
             <div className='Actions'>
-                <Mutation mutation={DELETE_COMPLETED_TODOS}>
+                <Mutation
+                    mutation={DELETE_COMPLETED_TODOS}
+                    onCompleted={postDeleteCompleted}
+                >
                     {(deleteCompleted, { loading }) =>
                         <button
-                            onClick={() => {
-                                deleteCompleted();
-                                dispatch.todos({
-                                    type: 'DELETE_COMPLETED',
-                                });
-                            }}
-                            disabled={
-                                loading
-                                || (completed_todos === 0)
-                            }
+                            onClick={deleteCompleted}
+                            disabled={loading || (completed_todos === 0)}
                         >
                             Delete Completed
                         </button>

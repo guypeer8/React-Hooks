@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Mutation } from 'react-apollo';
-import { FaTimes, FaEdit } from 'react-icons/fa';
+import { FaTimes, FaEdit, FaBan } from 'react-icons/fa';
 import { getStore } from './Providers/Store';
 import { TOGGLE_TODO, DELETE_TODO } from '../GraphQL/Mutation';
 
@@ -17,25 +17,30 @@ const Todo = ({ id, text, completed, index }) => {
         })
     );
 
+    const postToggleTodo = () => dispatch.todos({
+        type: 'TOGGLE_TODO',
+        id,
+    });
+
+    const postDeleteTodo = () => dispatch.todos({
+        type: 'DELETE_TODO',
+        id,
+    });
+
     return (
         <li>
             <span>{index}.{' '}</span>
             <Mutation
                 mutation={TOGGLE_TODO}
                 variables={{id}}
+                onCompleted={postToggleTodo}
             >
                 {(toggleTodo, { loading }) => (
                     <input
                         type="checkbox"
                         checked={completed}
                         disabled={loading}
-                        onChange={() => {
-                            toggleTodo();
-                            dispatch.todos({
-                                type: 'TOGGLE_TODO',
-                                id,
-                            });
-                        }}
+                        onChange={toggleTodo}
                     />
                 )}
             </Mutation>
@@ -43,39 +48,36 @@ const Todo = ({ id, text, completed, index }) => {
             <span
                 onClick={startEdit}
                 style={{
-                    textDecoration: (
-                        completed
-                            ? 'line-through'
-                            : 'none'
-                    )
+                    textDecoration: completed ? 'line-through': 'none'
                 }}
             >
             {text}
-        </span>
+            </span>
             <span>
-            <button onClick={startEdit}>
-                <FaEdit/>
-            </button>
-            <Mutation
-                mutation={DELETE_TODO}
-                variables={{id}}
-            >
-                {(deleteTodo, { loading }) => (
-                    <button
-                        disabled={loading}
-                        onClick={() => {
-                            deleteTodo();
-                            dispatch.todos({
-                                type: 'DELETE_TODO',
-                                id,
-                            });
-                        }}
-                    >
-                        <FaTimes/>
-                    </button>
-                )}
-            </Mutation>
-        </span>
+                <button
+                    onClick={startEdit}
+                    disabled={completed}
+                    style={{
+                        cursor: completed ? 'not-allowed' : ''
+                    }}
+                >
+                    {completed ? <FaBan/> : <FaEdit/>}
+                </button>
+                <Mutation
+                    mutation={DELETE_TODO}
+                    variables={{id}}
+                    onCompleted={postDeleteTodo}
+                >
+                    {(deleteTodo, { loading }) => (
+                        <button
+                            disabled={loading}
+                            onClick={deleteTodo}
+                        >
+                            <FaTimes/>
+                        </button>
+                    )}
+                </Mutation>
+            </span>
         </li>
     );
 };
