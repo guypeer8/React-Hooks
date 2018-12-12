@@ -11,6 +11,8 @@ const Todos = () => {
 
     if (fetched_todos) {
         const visibleTodos = getVisibleTodos(state.todos, state.filter);
+        if (visibleTodos.length === 0)
+            return null;
 
         return (
             <ul className='Todos-Container'>

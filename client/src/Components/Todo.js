@@ -81,7 +81,10 @@ const Todo = ({ id, text, completed, index }) => {
 };
 
 Todo.propTypes = {
-    id: PropTypes.string.isRequired,
+    id: PropTypes.oneOfType([
+        PropTypes.number,
+        PropTypes.string,
+    ]).isRequired,
     text: PropTypes.string.isRequired,
     completed: PropTypes.bool.isRequired,
     index: PropTypes.number.isRequired,

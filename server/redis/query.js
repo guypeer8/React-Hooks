@@ -1,8 +1,8 @@
-const client = require('./client');
+const redis = require('./client');
 
 const getTodos = () => (
     new Promise((resolve, reject) => {
-        client.hgetall('todos', (err, todosHash) => {
+        redis.hgetall('todos', (err, todosHash) => {
             if (err)
                 return reject(err);
 
@@ -19,7 +19,7 @@ const getTodos = () => (
 
 const getTodo = id => (
     new Promise((resolve, reject) => {
-        client.hget('todos', id, (err, todo) =>
+        redis.hget('todos', id, (err, todo) =>
             err ? reject(err) : resolve(JSON.parse(todo || '{}'))
         );
     })

@@ -1,92 +1,52 @@
-const uuid = require('uuid/v1');
-
 const TodoQuery = require('./query');
-const client = require('./client');
+const redis = require('./client');
 
 const addTodo = text => (
-    new Promise((reject, resolve) => {
-        const id = uuid();
-        const newTodo = {
-            id,
-            text,
-            completed: false,
-        };
-        const todoString = JSON.stringify(newTodo);
-
-        client.hset('todos', id, todoString, err =>
-            err ? reject(err) : resolve(newTodo)
-        );
-    })
+    redisPromise
+        .hincrby('todo_id', 'id')
+        .then(id =>
+            redisPromise.hset('todos', id, {
+                id,
+                text,
+                completed: false,
+            })
+        )
 );
 
 const editTodo = (id, text) => (
-    new Promise(async (reject, resolve) => {
-        try {
-            const todo = await TodoQuery.getTodo(id);
-            const editedTodo = {
+    TodoQuery
+        .getTodo(id)
+        .then(todo =>
+            redisPromise.hset('todos', id, {
                 ...todo,
                 text,
-            };
-            const todoString = JSON.stringify(editedTodo);
-
-            client.hset('todos', id, todoString, err =>
-                err ? reject(err) : resolve(editedTodo)
-            );
-        }
-        catch (err) {
-            reject(err);
-        }
-    })
+            })
+        )
 );
 
 const toggleTodo = id => (
-    new Promise(async (reject, resolve) => {
-        try {
-            const todo = await TodoQuery.getTodo(id);
-            const toggledTodo = {
+    TodoQuery
+        .getTodo(id)
+        .then(todo =>
+            redisPromise.hset('todos', id, {
                 ...todo,
                 completed: !todo.completed,
-            };
-            const todoString = JSON.stringify(toggledTodo);
-
-            client.hset('todos', id, todoString, err =>
-                err ? reject(err) : resolve(toggledTodo)
-            );
-        }
-        catch (err) {
-            reject(err);
-        }
-    })
+            })
+        )
 );
 
-const deleteTodo = id => (
-    new Promise(async (reject, resolve) => {
-        try {
-            client.hdel('todos', id, err =>
-                err ? reject(err) : resolve({ id })
-            );
-        }
-        catch (err) {
-            reject(err);
-        }
-    })
-);
+const deleteTodo = id =>
+    redisPromise.hdel('todos', id);
 
 const deleteCompletedTodos = () => (
-    new Promise(async (reject, resolve) => {
-        try {
-            const todos = await TodoQuery.getTodos();
-            const completedTodosIds = todos
+    TodoQuery
+        .getTodos()
+        .then(todos =>
+            todos
                 .filter(({ completed }) => completed)
-                .map(({ id }) => id);
-
-            await deleteTodos(completedTodosIds);
-            resolve();
-        }
-        catch (err) {
-            reject(err);
-        }
-    })
+                .map(({ id }) => id)
+        )
+        .then(deleteTodos)
 );
 
 const deleteTodos = ids =>
@@ -100,8 +60,26 @@ module.exports = {
     deleteCompletedTodos,
 };
 
-// addTodo('a');
-// addTodo('b');
-// addTodo('c');
-// addTodo('d');
-// addTodo('e');
+const redisPromise = {
+    hset: (key, id, data) => (
+        new Promise((resolve, reject) =>
+            redis.hset(key, id, JSON.stringify(data), err =>
+                err ? reject(err) : resolve(data)
+            )
+        )
+    ),
+    hdel: (key, id) => (
+        new Promise((resolve, reject) =>
+            redis.hdel(key, id, err =>
+                err ? reject(err) : resolve({id})
+            )
+        )
+    ),
+    hincrby: (key, id, score = 1) => (
+        new Promise((resolve, reject) =>
+            redis.hincrby(key, id, score, (err, data) =>
+                err ? reject(err) : resolve(data)
+            )
+        )
+    ),
+};

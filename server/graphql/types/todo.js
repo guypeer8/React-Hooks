@@ -6,7 +6,7 @@ const {
 } = require('graphql');
 
 const TodoType = new GraphQLObjectType({
-    name: 'TodoType',
+    name: 'Todo',
     fields: () => ({
         id: { type: GraphQLID },
         text: { type: GraphQLString },

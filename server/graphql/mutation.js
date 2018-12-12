@@ -2,6 +2,7 @@ const {
     GraphQLObjectType,
     GraphQLNonNull,
     GraphQLString,
+    GraphQLList,
     GraphQLID,
 } = require('graphql');
 
@@ -43,7 +44,7 @@ const Mutation = new GraphQLObjectType({
                 TodoMutation.deleteTodo(id),
         },
         deleteCompletedTodos: {
-            type: TodoType,
+            type: new GraphQLList(TodoType),
             resolve: () =>
                 TodoMutation.deleteCompletedTodos(),
         },
