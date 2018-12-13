@@ -47,6 +47,7 @@ const Todo = ({ id, text, completed, index }) => {
 
             <span
                 onClick={startEdit}
+                className='todo-text'
                 style={{
                     textDecoration: completed ? 'line-through': 'none'
                 }}

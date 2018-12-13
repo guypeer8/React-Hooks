@@ -3,12 +3,6 @@ import { Mutation } from 'react-apollo';
 import { getStore } from './Providers/Store';
 import { ADD_TODO, EDIT_TODO } from '../GraphQL/Mutation';
 
-const createTodo = (id, text) => ({
-    id,
-    text,
-    completed: false,
-});
-
 const TodoInput = () => {
     const { state, dispatch } = getStore();
     const { id, text } = state.todoInput;
@@ -51,20 +45,35 @@ const TodoInput = () => {
         focusInput();
     };
 
+    const onChange = (e) => (
+        dispatch.todoInput({
+            type: 'CHANGE_TODO',
+            text: e.target.value,
+        })
+    );
 
-    const onChange = (e) => dispatch.todoInput({
-        type: 'CHANGE_TODO',
-        text: e.target.value,
-    });
-
-    const clearTodo = () =>  dispatch.todoInput({
-        type: 'CLEAR_TODO',
-    });
+    const clearTodo = () => (
+        dispatch.todoInput({
+            type: 'CLEAR_TODO',
+        })
+    );
 
     const focusInput = () =>
         $inputEl.current.focus();
 
+    const destroyEdit = (e) => (
+        id
+        && e.target !== $inputEl.current
+        && !e.target.classList.contains('action-button')
+        && !e.target.classList.contains('todo-text')
+        && clearTodo()
+    );
+
     useEffect(focusInput);
+    useEffect(() => (
+        document.addEventListener('click', destroyEdit)
+        && document.removeEventListener('click', destroyEdit)
+    ));
 
     if (id) {
         return (
@@ -88,9 +97,13 @@ const TodoInput = () => {
                             disabled={loading}
                             ref={$inputEl}
                         />
-                        <button onClick={() =>
-                            canMutate() && editTodo()
-                        }>
+                        <button
+                            className='action-button'
+                            onClick={() =>
+                                canMutate()
+                                && editTodo()
+                            }
+                        >
                             Edit Todo
                         </button>
                     </div>
@@ -120,9 +133,13 @@ const TodoInput = () => {
                         disabled={loading}
                         ref={$inputEl}
                     />
-                    <button onClick={() =>
-                        canMutate() && addTodo()
-                    }>
+                    <button
+                        className='action-button'
+                        onClick={() =>
+                            canMutate()
+                            && addTodo()
+                        }
+                    >
                         Add Todo
                     </button>
                 </div>
@@ -132,3 +149,9 @@ const TodoInput = () => {
 };
 
 export default TodoInput;
+
+const createTodo = (id, text) => ({
+    id,
+    text,
+    completed: false,
+});
