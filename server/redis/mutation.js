@@ -22,35 +22,35 @@ const createUser = (username, password) => {
 const addTodo = (user_id, text) => (
     redisPromise
         .hincrby('todo_id', 'id')
-        .then(todo_id =>
-            redisPromise.hset(`todos:${user_id}`, todo_id, {
-                id,
+        .then(todo_id => {
+            return redisPromise.hset(`todos:${user_id}`, todo_id, {
+                id: todo_id,
                 text,
                 completed: false,
-            })
-        )
+            });
+        })
 );
 
 const editTodo = (user_id, todo_id, text) => (
     Query
-        .getTodo(id)
-        .then(todo =>
-            redisPromise.hset(`todos:${user_id}`, todo_id, {
+        .getTodo(user_id, todo_id)
+        .then(todo => {
+            return redisPromise.hset(`todos:${user_id}`, todo_id, {
                 ...todo,
                 text,
-            })
-        )
+            });
+        })
 );
 
 const toggleTodo = (user_id, todo_id) => (
     Query
-        .getTodo(id)
-        .then(todo =>
-            redisPromise.hset(`todos:${user_id}`, todo_id, {
+        .getTodo(user_id, todo_id)
+        .then(todo => {
+            return redisPromise.hset(`todos:${user_id}`, todo_id, {
                 ...todo,
                 completed: !todo.completed,
-            })
-        )
+            });
+        })
 );
 
 const deleteTodo = (user_id, todo_id) =>

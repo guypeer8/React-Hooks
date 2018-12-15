@@ -26,38 +26,42 @@ const MutationType= new GraphQLObjectType({
         addTodo: {
             type: TodoType,
             args: {
+                user_id: { type: GraphQLNonNull(GraphQLID) },
                 text: { type: GraphQLNonNull(GraphQLString) },
             },
-            resolve: ({ id }, { text }) =>
-                Mutation.addTodo(id, text),
+            resolve: (_, { user_id, text }) =>
+                Mutation.addTodo(user_id, text),
         },
         editTodo: {
             type: TodoType,
             args: {
+                user_id: { type: GraphQLNonNull(GraphQLID) },
                 id: { type: GraphQLNonNull(GraphQLID) },
                 text: { type: GraphQLNonNull(GraphQLString) },
             },
-            resolve: (user, { id, text }) =>
-                Mutation.editTodo(user.id, id, text),
+            resolve: (_, { user_id, id, text }) =>
+                Mutation.editTodo(user_id, id, text),
         },
         toggleTodo: {
             type: TodoType,
             args: {
+                user_id: { type: GraphQLNonNull(GraphQLID) },
                 id: { type: GraphQLNonNull(GraphQLID) },
             },
-            resolve: (user, { id }) =>
-                Mutation.toggleTodo(user.id, id),
+            resolve: (_, { user_id, id }) =>
+                Mutation.toggleTodo(user_id, id),
         },
         deleteTodo: {
             type: TodoType,
             args: { id: { type: GraphQLNonNull(GraphQLID) } },
-            resolve: (user, { id }) =>
-                Mutation.deleteTodo(user.id, id),
+            resolve: (_, { user_id, id }) =>
+                Mutation.deleteTodo(user_id, id),
         },
         deleteCompletedTodos: {
             type: new GraphQLList(TodoType),
-            resolve: ({ id }) =>
-                Mutation.deleteCompletedTodos(id),
+            args: { user_id: { type: GraphQLNonNull(GraphQLID) } },
+            resolve: (_, { user_id }) =>
+                Mutation.deleteCompletedTodos(user_id),
         },
     },
 });
