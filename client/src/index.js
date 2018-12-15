@@ -6,18 +6,20 @@ import GraphQL from './Components/Providers/GraphQL';
 import Store from './Components/Providers/Store';
 import Login from './Components/Auth/Login';
 import Signup from './Components/Auth/Signup';
-import PrivateRoute from './Components/Auth/PrivateRoute';
+import ProtectedRoute from './Components/Auth/ProtectedRoute';
+import Navbar from './Components/Presentation/Navbar';
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 
 const Root = () => (
     <GraphQL>
         <Store>
+            <Navbar />
             <div className='App'>
                 <Router>
                     <Switch>
                         <Route path='/signup' exact component={Signup} />
                         <Route path='/login' exact component={Login} />
-                        <PrivateRoute path='/:filter?' component={App} />
+                        <ProtectedRoute path='/:filter?' component={App} />
                     </Switch>
                 </Router>
             </div>

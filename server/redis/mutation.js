@@ -1,11 +1,29 @@
-const TodoQuery = require('./query');
-const redis = require('./client');
+const Query = require('./query');
+const redisPromise = require('./config/promise');
 
-const addTodo = text => (
+const createUser = (username, password) => {
+    existsUser(username)
+        .then(exists => {
+            if (exists)
+                return false;
+
+            return redisPromise
+                .hincrby('user_id', 'id')
+                .then(id =>
+                    redisPromise.hset('users', id, {
+                        id,
+                        username,
+                        password,
+                    })
+                );
+        });
+};
+
+const addTodo = (user_id, text) => (
     redisPromise
         .hincrby('todo_id', 'id')
-        .then(id =>
-            redisPromise.hset('todos', id, {
+        .then(todo_id =>
+            redisPromise.hset(`todos:${user_id}`, todo_id, {
                 id,
                 text,
                 completed: false,
@@ -13,34 +31,34 @@ const addTodo = text => (
         )
 );
 
-const editTodo = (id, text) => (
-    TodoQuery
+const editTodo = (user_id, todo_id, text) => (
+    Query
         .getTodo(id)
         .then(todo =>
-            redisPromise.hset('todos', id, {
+            redisPromise.hset(`todos:${user_id}`, todo_id, {
                 ...todo,
                 text,
             })
         )
 );
 
-const toggleTodo = id => (
-    TodoQuery
+const toggleTodo = (user_id, todo_id) => (
+    Query
         .getTodo(id)
         .then(todo =>
-            redisPromise.hset('todos', id, {
+            redisPromise.hset(`todos:${user_id}`, todo_id, {
                 ...todo,
                 completed: !todo.completed,
             })
         )
 );
 
-const deleteTodo = id =>
-    redisPromise.hdel('todos', id);
+const deleteTodo = (user_id, todo_id) =>
+    redisPromise.hdel(`todos:${user_id}`, todo_id);
 
-const deleteCompletedTodos = () => (
-    TodoQuery
-        .getTodos()
+const deleteCompletedTodos = user_id => (
+    Query
+        .getTodos(user_id)
         .then(todos =>
             todos
                 .filter(({ completed }) => completed)
@@ -49,10 +67,16 @@ const deleteCompletedTodos = () => (
         .then(deleteTodos)
 );
 
-const deleteTodos = ids =>
-    Promise.all(ids.map(id => deleteTodo(id)));
+const deleteTodos = todo_ids => (
+    Promise.all(
+        todo_ids.map(todo_id =>
+            deleteTodo(todo_id)
+        )
+    )
+);
 
 module.exports = {
+    createUser,
     addTodo,
     editTodo,
     toggleTodo,
@@ -60,26 +84,12 @@ module.exports = {
     deleteCompletedTodos,
 };
 
-const redisPromise = {
-    hset: (key, id, data) => (
-        new Promise((resolve, reject) =>
-            redis.hset(key, id, JSON.stringify(data), err =>
-                err ? reject(err) : resolve(data)
-            )
+const existsUser = username => (
+    Query
+        .getUsers()
+        .then(users =>
+            users.filter(user =>
+                user.username === username
+            ).length > 0
         )
-    ),
-    hdel: (key, id) => (
-        new Promise((resolve, reject) =>
-            redis.hdel(key, id, err =>
-                err ? reject(err) : resolve({id})
-            )
-        )
-    ),
-    hincrby: (key, id, score = 1) => (
-        new Promise((resolve, reject) =>
-            redis.hincrby(key, id, score, (err, data) =>
-                err ? reject(err) : resolve(data)
-            )
-        )
-    ),
-};
+);

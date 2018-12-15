@@ -1,41 +1,14 @@
 import React from 'react';
 import { getStore } from '../Providers/Store';
+import { useValidation } from '../../Helpers/FormHelpers';
 
 const Login = ({ history }) => {
     const { state, dispatch } = getStore();
     const { username, password, error } = state.auth;
 
-    const validateForm = () => {
-        if (!username) {
-            dispatch.auth({
-                type: 'SET_ERROR',
-                error: 'Please provide your username.',
-            });
-            return false;
-        }
-
-        if (!password) {
-            dispatch.auth({
-                type: 'SET_ERROR',
-                error: 'Please provide a password.',
-            });
-            return false;
-        }
-
-        if (password.length < 6) {
-            dispatch.auth({
-                type: 'SET_ERROR',
-                error: 'Password must include at least 6 characters.',
-            });
-            return false;
-        }
-
-        return true;
-    };
-
     const login = (e) => {
         e.preventDefault();
-        if (!validateForm())
+        if (!useValidation({ state, dispatch }))
             return;
 
         dispatch.auth({
@@ -68,7 +41,7 @@ const Login = ({ history }) => {
     };
 
     return (
-        <div className='login'>
+        <div className='Auth-Form'>
             <h4>Login</h4>
             <form onSubmit={login}>
                 <div>
@@ -80,6 +53,7 @@ const Login = ({ history }) => {
                         onChange={updateUser}
                     />
                 </div>
+                {error.type === 'username' ? <div className='alert-danger'>{error.message}</div> : null}
                 <div>
                     <input
                         type='password'
@@ -89,6 +63,7 @@ const Login = ({ history }) => {
                         onChange={updateUser}
                     />
                 </div>
+                {error.type === 'password' ? <div className='alert-danger'>{error.message}</div> : null}
                 <div>
                     <button
                         type='submit'
@@ -96,10 +71,12 @@ const Login = ({ history }) => {
                         Login
                     </button>
                 </div>
-                {error ? <div className='alert-danger'>{error}</div> : null}
                 <div>
-                    <span>Don't have an account ?</span>
-                    <span onClick={signup}>
+                    <span>Don't have an account ?</span> {' '}
+                    <span
+                        className='Navigate-Auth'
+                        onClick={signup}
+                    >
                         Signup
                     </span>
                 </div>

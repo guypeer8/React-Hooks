@@ -4,7 +4,7 @@ import { NavLink } from 'react-router-dom';
 import { getStore } from '../Providers/Store';
 import { DELETE_COMPLETED_TODOS } from '../../GraphQL/Mutation/Todos';
 
-const filters = ['all', 'active', 'completed'];
+const FILTERS = ['all', 'active', 'completed'];
 
 const Filters = ({ filter }) => {
     const { state, dispatch } = getStore();
@@ -24,14 +24,13 @@ const Filters = ({ filter }) => {
     const active_todos = countActiveTodos();
     const completed_todos = countCompletedTodos();
 
-    const postDeleteCompleted = () => dispatch.todos({
-        type: 'DELETE_COMPLETED',
-    });
+    const postDeleteCompleted = () =>
+        dispatch.todos({ type: 'DELETE_COMPLETED' });
 
     return (
         <div className='Footer'>
             <div className='Filters'>
-                {filters.map(fltr => (
+                {FILTERS.map(fltr => (
                     <NavLink
                         key={fltr}
                         to={`/${fltr}`}

@@ -8,7 +8,7 @@ const StoreContext = createContext(null);
 const StoreProvider = ({ children }) => {
     const [auth, dispatchAuth] = useReducer(
         authReducer,
-        {username: '', password: '', confirm: '', is_logged_in: false}
+        {username: '', password: '', confirm: '', error: {type: '', message: ''}, is_logged_in: false}
     );
 
     const [todos, dispatchTodos] = useReducer(

@@ -10,4 +10,4 @@ export function useFormInput(initialInput = '') {
             setValue(e.target.value);
         },
     };
-}
+};

@@ -1,31 +1,20 @@
-const redis = require('./client');
+const redisPromise = require('./config/promise');
 
-const getTodos = () => (
-    new Promise((resolve, reject) => {
-        redis.hgetall('todos', (err, todosHash) => {
-            if (err)
-                return reject(err);
+const getUsers = () =>
+    redisPromise.hgetall('users');
 
-            const todos = Object
-                .values(todosHash || {})
-                .map(todoString =>
-                    JSON.parse(todoString)
-                );
+const getUser = user_id =>
+    redisPromise.hget('users', user_id);
 
-            resolve(todos);
-        });
-    })
-);
+const getTodos = user_id =>
+    redisPromise.hgetall(`todos:${user_id}`);
 
-const getTodo = id => (
-    new Promise((resolve, reject) => {
-        redis.hget('todos', id, (err, todo) =>
-            err ? reject(err) : resolve(JSON.parse(todo || '{}'))
-        );
-    })
-);
+const getTodo = (user_id, todo_id) =>
+    redisPromise.hget(`todos:${user_id}`, todo_id);
 
 module.exports = {
-    getTodo,
+    getUsers,
+    getUser,
     getTodos,
+    getTodo,
 };

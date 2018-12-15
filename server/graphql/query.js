@@ -4,22 +4,39 @@ const {
     GraphQLList,
 } = require('graphql');
 
-const TodoQuery = require('../redis/query');
+const Query = require('../redis/query');
+
+const UserType = require('./types/user');
 const TodoType = require('./types/todo');
 
 const RootQuery = new GraphQLObjectType({
     name: 'RootQueryType',
     fields: {
-        todo: {
-            type: TodoType,
+        user: {
+            type: UserType,
             args: { id: { type: GraphQLID } },
             resolve: (_, { id }) =>
-                TodoQuery.getTodo(id),
+                Query.getUser(id),
+        },
+        users: {
+            type: new GraphQLList(UserType),
+            resolve: () =>
+                Query.getUsers(),
+        },
+        todo: {
+            type: TodoType,
+            args: {
+                user_id: { type: GraphQLID },
+                todo_id: { type: GraphQLID },
+            },
+            resolve: (_, { user_id, todo_id }) =>
+                Query.getTodo(user_id, todo_id),
         },
         todos: {
-            type: GraphQLList(TodoType),
-            resolve: () =>
-                TodoQuery.getTodos(),
+            type: new GraphQLList(TodoType),
+            args: { user_id: { type: GraphQLID } },
+            resolve: (_, { user_id }) =>
+                Query.getTodos(user_id),
         },
     },
 });

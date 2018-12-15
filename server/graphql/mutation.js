@@ -6,19 +6,30 @@ const {
     GraphQLID,
 } = require('graphql');
 
-const TodoMutation = require('../redis/mutation');
+const Mutation = require('../redis/mutation');
+
+const UserType = require('./types/user');
 const TodoType = require('./types/todo');
 
-const Mutation = new GraphQLObjectType({
+const MutationType= new GraphQLObjectType({
     name: 'Mutation',
     fields: {
+        createUser: {
+            type: UserType,
+            args: {
+                username: { type: GraphQLNonNull(GraphQLString) },
+                password: { type: GraphQLNonNull(GraphQLString) },
+            },
+            resolve: (_, { username, password }) =>
+                Mutation.createUser(username, password),
+        },
         addTodo: {
             type: TodoType,
             args: {
                 text: { type: GraphQLNonNull(GraphQLString) },
             },
-            resolve: (_, { text }) =>
-                TodoMutation.addTodo(text),
+            resolve: ({ id }, { text }) =>
+                Mutation.addTodo(id, text),
         },
         editTodo: {
             type: TodoType,
@@ -26,29 +37,29 @@ const Mutation = new GraphQLObjectType({
                 id: { type: GraphQLNonNull(GraphQLID) },
                 text: { type: GraphQLNonNull(GraphQLString) },
             },
-            resolve: (_, { id, text }) =>
-                TodoMutation.editTodo(id, text),
+            resolve: (user, { id, text }) =>
+                Mutation.editTodo(user.id, id, text),
         },
         toggleTodo: {
             type: TodoType,
             args: {
                 id: { type: GraphQLNonNull(GraphQLID) },
             },
-            resolve: (_, { id }) =>
-                TodoMutation.toggleTodo(id),
+            resolve: (user, { id }) =>
+                Mutation.toggleTodo(user.id, id),
         },
         deleteTodo: {
             type: TodoType,
             args: { id: { type: GraphQLNonNull(GraphQLID) } },
-            resolve: (_, { id }) =>
-                TodoMutation.deleteTodo(id),
+            resolve: (user, { id }) =>
+                Mutation.deleteTodo(user.id, id),
         },
         deleteCompletedTodos: {
             type: new GraphQLList(TodoType),
-            resolve: () =>
-                TodoMutation.deleteCompletedTodos(),
+            resolve: ({ id }) =>
+                Mutation.deleteCompletedTodos(id),
         },
     },
 });
 
-module.exports = Mutation;
+module.exports = MutationType;

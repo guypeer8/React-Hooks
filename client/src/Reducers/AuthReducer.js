@@ -2,7 +2,10 @@ const initialState = {
     username: '',
     password: '',
     confirm: '',
-    error: '',
+    error: {
+        message: '',
+        type: '',
+    },
     is_logged_in: false,
 };
 
@@ -13,6 +16,7 @@ const authReducer = (auth = initialState, action) => {
                 ...auth,
                 ...(action.username ? {username: action.username} : {}),
                 ...(action.password ? {password: action.password} : {}),
+                ...(action.confirm ? {confirm: action.confirm} : {}),
             };
 
         case 'SET_USER':
@@ -28,13 +32,19 @@ const authReducer = (auth = initialState, action) => {
         case 'SET_ERROR':
             return {
                 ...auth,
-                error: action.error,
+                error: {
+                    ...auth.error,
+                    ...action.error,
+                },
             };
 
         case 'CLEAR_ERROR':
             return {
                 ...auth,
-                error: '',
+                error: {
+                    message: '',
+                    type: '',
+                },
             };
 
         default:
