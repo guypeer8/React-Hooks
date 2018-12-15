@@ -1,19 +1,19 @@
 import React from 'react';
 import { Mutation } from 'react-apollo';
 import { NavLink } from 'react-router-dom';
-import { getStore } from './Providers/Store';
-import { DELETE_COMPLETED_TODOS } from '../GraphQL/Mutation';
+import { getStore } from '../Providers/Store';
+import { DELETE_COMPLETED_TODOS } from '../../GraphQL/Mutation/Todos';
 
 const filters = ['all', 'active', 'completed'];
 
-const Filters = () => {
+const Filters = ({ filter }) => {
     const { state, dispatch } = getStore();
 
     const isActive = aFilter =>
-        aFilter === state.filter;
+        aFilter === filter;
 
-    const navigate = (e, filter) =>
-        isActive(filter) && e.preventDefault();
+    const navigate = (e, fltr) =>
+        isActive(fltr) && e.preventDefault();
 
     const countActiveTodos = () =>
         state.todos.filter(({completed}) => !completed).length;
@@ -31,14 +31,14 @@ const Filters = () => {
     return (
         <div className='Footer'>
             <div className='Filters'>
-                {filters.map(filter => (
+                {filters.map(fltr => (
                     <NavLink
-                        key={filter}
-                        to={`/${filter}`}
-                        onClick={e => navigate(e, filter)}
-                        className={isActive(filter) ? 'Active' : ''}
+                        key={fltr}
+                        to={`/${fltr}`}
+                        onClick={e => navigate(e, fltr)}
+                        className={isActive(fltr) ? 'Active' : ''}
                     >
-                        {filter}
+                        {fltr}
                     </NavLink>
                 ))}
             </div>

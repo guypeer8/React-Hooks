@@ -2,8 +2,8 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { Mutation } from 'react-apollo';
 import { FaTimes, FaEdit, FaBan } from 'react-icons/fa';
-import { getStore } from './Providers/Store';
-import { TOGGLE_TODO, DELETE_TODO } from '../GraphQL/Mutation';
+import { getStore } from '../Providers/Store';
+import { TOGGLE_TODO, DELETE_TODO } from '../../GraphQL/Mutation/Todos';
 
 const Todo = ({ id, text, completed, index }) => {
     const { dispatch } = getStore();

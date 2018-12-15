@@ -1,16 +1,16 @@
 import React from 'react';
 import { Query } from 'react-apollo';
 import Todo from './Todo';
-import { getStore } from './Providers/Store';
-import { GET_TODOS } from '../GraphQL/Query';
+import { getStore } from '../Providers/Store';
+import { GET_TODOS } from '../../GraphQL/Query';
 
 let fetched_todos = false;
 
-const Todos = () => {
+const Todos = ({ filter }) => {
     const { state, dispatch } = getStore();
 
     if (fetched_todos) {
-        const visibleTodos = getVisibleTodos(state.todos, state.filter);
+        const visibleTodos = getVisibleTodos(state.todos, filter);
         if (visibleTodos.length === 0)
             return null;
 

@@ -1,10 +1,16 @@
 import React, {createContext, useContext, useReducer} from 'react';
 import todoInputReducer from '../../Reducers/TodoInputReducer';
 import todosReducer from '../../Reducers/TodosReducer';
+import authReducer from '../../Reducers/AuthReducer';
 
 const StoreContext = createContext(null);
 
-const StoreProvider = ({ children, routeParams }) => {
+const StoreProvider = ({ children }) => {
+    const [auth, dispatchAuth] = useReducer(
+        authReducer,
+        {username: '', password: '', confirm: '', is_logged_in: false}
+    );
+
     const [todos, dispatchTodos] = useReducer(
         todosReducer,
         []
@@ -17,11 +23,12 @@ const StoreProvider = ({ children, routeParams }) => {
 
     const store = {
         state: {
+            auth,
             todoInput,
             todos,
-            filter: routeParams.filter || 'all',
         },
         dispatch: {
+            auth: dispatchAuth,
             todoInput: dispatchTodoInput,
             todos: dispatchTodos,
         },

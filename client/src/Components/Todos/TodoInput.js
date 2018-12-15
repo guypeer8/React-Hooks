@@ -1,7 +1,7 @@
 import React, { useRef, useEffect } from 'react';
 import { Mutation } from 'react-apollo';
-import { getStore } from './Providers/Store';
-import { ADD_TODO, EDIT_TODO } from '../GraphQL/Mutation';
+import { getStore } from '../Providers/Store';
+import { ADD_TODO, EDIT_TODO } from '../../GraphQL/Mutation/Todos';
 
 const TodoInput = () => {
     const { state, dispatch } = getStore();
