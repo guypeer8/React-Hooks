@@ -1,8 +1,13 @@
+const appRoot = require('app-root-dir').get();
 const jwt = require('jsonwebtoken');
-const bcrypt = require('bcrypt');
+const bcrypt = require('bcryptjs');
+const path = require('path');
+const fs = require('fs');
 
 const Redis = require('./query');
 const redisPromise = require('./config/promise');
+
+const JWT_SECRET = fs.readFileSync(path.join(appRoot, 'redis', 'config', 'secret.pem'));
 
 const signUser = (username, password) => (
     existsUser(username)
@@ -15,7 +20,7 @@ const signUser = (username, password) => (
             return redisPromise
                 .hincrby('user_id', 'id')
                 .then(id => {
-                    const token = signJWT({id, username});
+                    const token = signJWT({ id, username });
                     return redisPromise.hset('users', id, {
                         id,
                         username,
@@ -171,20 +176,22 @@ const compareHash = (username, password) => (
 );
 
 const signJWT = ({ id, username }) => {
-    const token = jwt.sign({
-        id,
-        username,
-    }, 'secret', {
-        expiresIn: '1d',
-    });
+    const token = jwt.sign(
+        { id, username },
+        JWT_SECRET,
+        { expiresIn: '1d' }
+    );
 
     return token;
 };
 
 const verifyJWT = token => (
     new Promise((resolve, reject) => {
-        jwt.verify(token, 'secret', (err, decoded) =>
-            err ? reject(err) : resolve(decoded)
+        jwt.verify(
+            token,
+            JWT_SECRET,
+            (err, decoded) =>
+                err ? reject(err) : resolve(decoded)
         );
     })
 );
