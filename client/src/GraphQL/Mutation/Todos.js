@@ -1,8 +1,8 @@
 import gql from 'graphql-tag';
 
 export const ADD_TODO = gql`
-    mutation ADD_TODO($text: String!) {
-        addTodo(text: $text) { 
+    mutation ADD_TODO($user_id: ID!, $text: String!) {
+        addTodo(user_id: $user_id, text: $text) { 
             id,
             text,
             completed
@@ -11,8 +11,8 @@ export const ADD_TODO = gql`
 `;
 
 export const EDIT_TODO = gql`
-   mutation EDIT_TODO($id: ID!, $text: String!) {
-        editTodo(id: $id, text: $text) { 
+   mutation EDIT_TODO($user_id: ID!, $id: ID!, $text: String!) {
+        editTodo(user_id: $user_id, id: $id, text: $text) { 
             id,
             text,
             completed
@@ -21,8 +21,8 @@ export const EDIT_TODO = gql`
 `;
 
 export const TOGGLE_TODO = gql`
-   mutation TOGGLE_TODO($id: ID!) {
-        toggleTodo(id: $id) { 
+   mutation TOGGLE_TODO($user_id: ID!, $id: ID!) {
+        toggleTodo(user_id: $user_id, id: $id) { 
             id,
             text,
             completed
@@ -31,8 +31,8 @@ export const TOGGLE_TODO = gql`
 `;
 
 export const DELETE_TODO = gql`
-   mutation DELETE_TODO($id: ID!) {
-        deleteTodo(id: $id) {
+   mutation DELETE_TODO($user_id: ID!, $id: ID!) {
+        deleteTodo(user_id: $user_id, id: $id) {
             id,
             text,
             completed
@@ -41,8 +41,8 @@ export const DELETE_TODO = gql`
 `;
 
 export const DELETE_COMPLETED_TODOS = gql`
-   mutation DELETE_COMPLETED_TODOS {
-        deleteCompletedTodos {
+   mutation DELETE_COMPLETED_TODOS($user_id: ID!) {
+        deleteCompletedTodos(user_id: $user_id) {
             id,
             text,
             completed

@@ -6,7 +6,7 @@ import { getStore } from '../Providers/Store';
 import { TOGGLE_TODO, DELETE_TODO } from '../../GraphQL/Mutation/Todos';
 
 const Todo = ({ id, text, completed, index }) => {
-    const { dispatch } = getStore();
+    const { state, dispatch } = getStore();
 
     const startEdit = () => (
         !completed
@@ -17,22 +17,29 @@ const Todo = ({ id, text, completed, index }) => {
         })
     );
 
-    const postToggleTodo = () => dispatch.todos({
-        type: 'TOGGLE_TODO',
-        id,
-    });
+    const postToggleTodo = () => (
+        dispatch.todos({
+            type: 'TOGGLE_TODO',
+            id,
+        })
+    );
 
-    const postDeleteTodo = () => dispatch.todos({
-        type: 'DELETE_TODO',
-        id,
-    });
+    const postDeleteTodo = () => (
+        dispatch.todos({
+            type: 'DELETE_TODO',
+            id,
+        })
+    );
 
     return (
         <li>
             <span>{index}.{' '}</span>
             <Mutation
                 mutation={TOGGLE_TODO}
-                variables={{id}}
+                variables={{
+                    user_id: state.auth.id,
+                    id,
+                }}
                 onCompleted={postToggleTodo}
             >
                 {(toggleTodo, { loading }) => (
@@ -66,7 +73,10 @@ const Todo = ({ id, text, completed, index }) => {
                 </button>
                 <Mutation
                     mutation={DELETE_TODO}
-                    variables={{id}}
+                    variables={{
+                        user_id: state.auth.id,
+                        id,
+                    }}
                     onCompleted={postDeleteTodo}
                 >
                     {(deleteTodo, { loading }) => (

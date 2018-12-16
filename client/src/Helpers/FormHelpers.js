@@ -1,6 +1,6 @@
 export function useValidation({ state, dispatch, confirm_pwd = false }) {
     let { username, password, confirm } = state.auth;
-    [username, password, confirm].forEach(field => field = field.trim);
+    [username, password, confirm].forEach(field => field = field.trim());
 
     const setError = (message, type) => {
         dispatch.auth({

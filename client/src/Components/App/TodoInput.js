@@ -79,7 +79,11 @@ const TodoInput = () => {
         return (
             <Mutation
                 mutation={EDIT_TODO}
-                variables={{ text, id }}
+                variables={{
+                    user_id: state.auth.id,
+                    text,
+                    id,
+                }}
                 onCompleted={postEditTodo}
             >
                 {(editTodo, { loading }) => (
@@ -115,7 +119,10 @@ const TodoInput = () => {
     return (
         <Mutation
             mutation={ADD_TODO}
-            variables={{ text }}
+            variables={{
+                user_id: state.auth.id,
+                text,
+            }}
             onCompleted={postAddTodo}
         >
             {(addTodo, { loading }) => (

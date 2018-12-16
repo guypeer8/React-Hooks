@@ -1,19 +1,34 @@
 import React from 'react';
+import { Mutation } from 'react-apollo';
 import { getStore } from '../Providers/Store';
+import { LOGIN_USER } from '../../GraphQL/Mutation/Auth';
 import { useValidation } from '../../Helpers/FormHelpers';
 
 const Login = ({ history }) => {
     const { state, dispatch } = getStore();
     const { username, password, error } = state.auth;
 
-    const login = (e) => {
-        e.preventDefault();
-        if (!useValidation({ state, dispatch }))
-            return;
+    const canSubmit = () =>
+        useValidation({ state, dispatch });
+
+    const loginError = () => (
+        dispatch.auth({
+            type: 'SET_ERROR',
+            error: {
+                type: 'password',
+                message: 'Incorrect username or password.',
+            },
+        })
+    );
+
+    const postLogin = ({ loginUser }) => {
+        if (!(loginUser && loginUser.id))
+            return loginError();
 
         dispatch.auth({
             type: 'SET_USER',
-            username,
+            id: loginUser.id,
+            username: loginUser.username,
         });
 
         history.push('/all');
@@ -41,47 +56,60 @@ const Login = ({ history }) => {
     };
 
     return (
-        <div className='Auth-Form'>
-            <h4>Login</h4>
-            <form onSubmit={login}>
-                <div>
-                    <input
-                        type='text'
-                        name='username'
-                        placeholder='Username'
-                        value={username}
-                        onChange={updateUser}
-                    />
+        <Mutation
+            mutation={LOGIN_USER}
+            variables={{ username, password }}
+            onCompleted={postLogin}
+        >
+            {(loginUser, { loading }) => (
+                <div className='Auth-Form'>
+                    <h4>Login</h4>
+                    <form onSubmit={e => {
+                        e.preventDefault();
+                        if (canSubmit())
+                            loginUser();
+                    }}>
+                        <div>
+                            <input
+                                type='text'
+                                name='username'
+                                placeholder='Username'
+                                value={username}
+                                onChange={updateUser}
+                            />
+                        </div>
+                        {error.type === 'username' ? <div className='alert-danger'>{error.message}</div> : null}
+                        <div>
+                            <input
+                                type='password'
+                                name='password'
+                                placeholder='Password'
+                                value={password}
+                                onChange={updateUser}
+                            />
+                        </div>
+                        {error.type === 'password' ? <div className='alert-danger'>{error.message}</div> : null}
+                        <div>
+                            <button
+                                type='submit'
+                                disabled={loading}
+                            >
+                                Submit
+                            </button>
+                        </div>
+                        <div>
+                            <span>Don't have an account ?</span> {' '}
+                            <span
+                                className='Navigate-Auth'
+                                onClick={signup}
+                            >
+                                Sign Up
+                            </span>
+                        </div>
+                    </form>
                 </div>
-                {error.type === 'username' ? <div className='alert-danger'>{error.message}</div> : null}
-                <div>
-                    <input
-                        type='password'
-                        name='password'
-                        placeholder='Password'
-                        value={password}
-                        onChange={updateUser}
-                    />
-                </div>
-                {error.type === 'password' ? <div className='alert-danger'>{error.message}</div> : null}
-                <div>
-                    <button
-                        type='submit'
-                    >
-                        Login
-                    </button>
-                </div>
-                <div>
-                    <span>Don't have an account ?</span> {' '}
-                    <span
-                        className='Navigate-Auth'
-                        onClick={signup}
-                    >
-                        Signup
-                    </span>
-                </div>
-            </form>
-        </div>
+            )}
+        </Mutation>
     );
 };
 

@@ -6,22 +6,37 @@ const {
     GraphQLID,
 } = require('graphql');
 
-const Mutation = require('../redis/mutation');
+const Redis = require('../redis/mutation');
 
 const UserType = require('./types/user');
 const TodoType = require('./types/todo');
 
-const MutationType= new GraphQLObjectType({
+const MutationType = new GraphQLObjectType({
     name: 'Mutation',
     fields: {
-        createUser: {
+        signUser: {
             type: UserType,
             args: {
                 username: { type: GraphQLNonNull(GraphQLString) },
                 password: { type: GraphQLNonNull(GraphQLString) },
             },
             resolve: (_, { username, password }) =>
-                Mutation.createUser(username, password),
+                Redis.signUser(username, password),
+        },
+        loginUser: {
+            type: UserType,
+            args: {
+                username: { type: GraphQLNonNull(GraphQLString) },
+                password: { type: GraphQLNonNull(GraphQLString) },
+            },
+            resolve: (_, { username, password }) =>
+                Redis.loginUser(username, password),
+        },
+        authenticateUser: {
+            type: UserType,
+            args: { token: { type: GraphQLNonNull(GraphQLString) } },
+            resolve: (_, { token }) =>
+                Redis.authenticateUser(token),
         },
         addTodo: {
             type: TodoType,
@@ -30,7 +45,7 @@ const MutationType= new GraphQLObjectType({
                 text: { type: GraphQLNonNull(GraphQLString) },
             },
             resolve: (_, { user_id, text }) =>
-                Mutation.addTodo(user_id, text),
+                Redis.addTodo(user_id, text),
         },
         editTodo: {
             type: TodoType,
@@ -40,7 +55,7 @@ const MutationType= new GraphQLObjectType({
                 text: { type: GraphQLNonNull(GraphQLString) },
             },
             resolve: (_, { user_id, id, text }) =>
-                Mutation.editTodo(user_id, id, text),
+                Redis.editTodo(user_id, id, text),
         },
         toggleTodo: {
             type: TodoType,
@@ -49,19 +64,19 @@ const MutationType= new GraphQLObjectType({
                 id: { type: GraphQLNonNull(GraphQLID) },
             },
             resolve: (_, { user_id, id }) =>
-                Mutation.toggleTodo(user_id, id),
+                Redis.toggleTodo(user_id, id),
         },
         deleteTodo: {
             type: TodoType,
             args: { id: { type: GraphQLNonNull(GraphQLID) } },
             resolve: (_, { user_id, id }) =>
-                Mutation.deleteTodo(user_id, id),
+                Redis.deleteTodo(user_id, id),
         },
         deleteCompletedTodos: {
             type: new GraphQLList(TodoType),
             args: { user_id: { type: GraphQLNonNull(GraphQLID) } },
             resolve: (_, { user_id }) =>
-                Mutation.deleteCompletedTodos(user_id),
+                Redis.deleteCompletedTodos(user_id),
         },
     },
 });

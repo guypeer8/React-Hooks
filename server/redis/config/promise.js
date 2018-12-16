@@ -37,7 +37,7 @@ const redisPromise = {
     hdel: (key, id) => (
         new Promise((resolve, reject) =>
             redis.hdel(key, id, err =>
-                err ? reject(err) : resolve({id})
+                err ? reject(err) : resolve({ id })
             )
         )
     ),

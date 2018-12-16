@@ -48,6 +48,7 @@ const Filters = ({ filter }) => {
             <div className='Actions'>
                 <Mutation
                     mutation={DELETE_COMPLETED_TODOS}
+                    variables={{ user_id: state.auth.id }}
                     onCompleted={postDeleteCompleted}
                 >
                     {(deleteCompleted, { loading }) =>

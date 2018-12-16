@@ -5,7 +5,7 @@ const {
     GraphQLID,
 } = require('graphql');
 
-const Query = require('../../redis/query');
+const Redis = require('../../redis/query');
 const TodoType = require('./todo');
 
 const UserType = new GraphQLObjectType({
@@ -17,7 +17,7 @@ const UserType = new GraphQLObjectType({
         todos: {
             type: new GraphQLList(TodoType),
             resolve: ({ id }) =>
-                Query.getTodos(id),
+                Redis.getTodos(id),
         },
     }),
 });

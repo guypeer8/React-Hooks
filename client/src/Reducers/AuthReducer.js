@@ -1,4 +1,5 @@
 const initialState = {
+    id: null,
     username: '',
     password: '',
     confirm: '',
@@ -14,6 +15,7 @@ const authReducer = (auth = initialState, action) => {
         case 'UPDATE_USER':
             return {
                 ...auth,
+                ...(action.id ? {id: action.id} : {}),
                 ...(action.username ? {username: action.username} : {}),
                 ...(action.password ? {password: action.password} : {}),
                 ...(action.confirm ? {confirm: action.confirm} : {}),
@@ -22,6 +24,7 @@ const authReducer = (auth = initialState, action) => {
         case 'SET_USER':
             return {
                 ...auth,
+                id: action.id,
                 username: action.username,
                 is_logged_in: true,
             };

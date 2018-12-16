@@ -31,7 +31,12 @@ const Todos = ({ filter }) => {
     }
 
     return (
-        <Query query={GET_TODOS}>
+        <Query
+            query={GET_TODOS}
+            variables={{
+                user_id: state.auth.id,
+            }}
+        >
             {({ data: { todos }, loading, error }) => {
                 if (loading) return <div>Loading...</div>;
                 if (error) return <div>{error}</div>;

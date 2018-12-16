@@ -1,23 +1,49 @@
-const Query = require('./query');
+const jwt = require('jsonwebtoken');
+const bcrypt = require('bcrypt');
+
+const Redis = require('./query');
 const redisPromise = require('./config/promise');
 
-const createUser = (username, password) => {
+const signUser = (username, password) => (
     existsUser(username)
-        .then(exists => {
-            if (exists)
-                return false;
+        .then(exists =>
+            exists ? null : hashPassword(password)
+        ).then(hashedPwd => {
+            if (!hashedPwd)
+                return null;
 
             return redisPromise
                 .hincrby('user_id', 'id')
-                .then(id =>
-                    redisPromise.hset('users', id, {
+                .then(id => {
+                    const token = signJWT({id, username});
+                    return redisPromise.hset('users', id, {
                         id,
                         username,
-                        password,
-                    })
-                );
-        });
-};
+                        password: hashedPwd,
+                        token,
+                    });
+                });
+        })
+);
+
+const loginUser = (username, password) => (
+    compareHash(username, password)
+        .then(({ user, match }) =>
+            match ? user : null
+        )
+);
+
+const authenticateUser = token => (
+    verifyJWT(token)
+        .then(({ id, username }) => ({
+            user: { id, username },
+            authenticated: true,
+        }))
+        .catch(() => ({
+            user: null,
+            authenticated: false,
+        }))
+);
 
 const addTodo = (user_id, text) => (
     redisPromise
@@ -32,7 +58,7 @@ const addTodo = (user_id, text) => (
 );
 
 const editTodo = (user_id, todo_id, text) => (
-    Query
+    Redis
         .getTodo(user_id, todo_id)
         .then(todo => {
             return redisPromise.hset(`todos:${user_id}`, todo_id, {
@@ -43,7 +69,7 @@ const editTodo = (user_id, todo_id, text) => (
 );
 
 const toggleTodo = (user_id, todo_id) => (
-    Query
+    Redis
         .getTodo(user_id, todo_id)
         .then(todo => {
             return redisPromise.hset(`todos:${user_id}`, todo_id, {
@@ -57,7 +83,7 @@ const deleteTodo = (user_id, todo_id) =>
     redisPromise.hdel(`todos:${user_id}`, todo_id);
 
 const deleteCompletedTodos = user_id => (
-    Query
+    Redis
         .getTodos(user_id)
         .then(todos =>
             todos
@@ -76,7 +102,9 @@ const deleteTodos = todo_ids => (
 );
 
 module.exports = {
-    createUser,
+    signUser,
+    loginUser,
+    authenticateUser,
     addTodo,
     editTodo,
     toggleTodo,
@@ -84,12 +112,77 @@ module.exports = {
     deleteCompletedTodos,
 };
 
-const existsUser = username => (
-    Query
+const getUserByUsername = username => (
+    Redis
         .getUsers()
         .then(users =>
-            users.filter(user =>
+            users.find(user =>
                 user.username === username
-            ).length > 0
+            )
         )
+);
+
+const existsUser = username => (
+    getUserByUsername(username)
+        .then(user => !!user)
+);
+
+const hashPassword = password => (
+    new Promise((resolve, reject) => (
+        bcrypt.genSalt(10, (err, salt) => (
+            err
+                ? reject(err)
+                : bcrypt.hash(password, salt, (err, hash) => (
+                    err ? reject(err) : resolve(hash)
+                ))
+        ))
+    ))
+);
+
+const compareHash = (username, password) => (
+    new Promise((resolve, reject) => {
+        getUserByUsername(username)
+            .then(user => {
+                if (!user) {
+                    return resolve({
+                        user: null,
+                        match: false,
+                    });
+                }
+
+                bcrypt.compare(
+                    password,
+                    user.password,
+                    (err, match) => {
+                        if (err)
+                            return reject(err);
+
+                        delete user.password;
+                        return resolve({
+                            user,
+                            match,
+                        });
+                    }
+                )
+            });
+    })
+);
+
+const signJWT = ({ id, username }) => {
+    const token = jwt.sign({
+        id,
+        username,
+    }, 'secret', {
+        expiresIn: '1d',
+    });
+
+    return token;
+};
+
+const verifyJWT = token => (
+    new Promise((resolve, reject) => {
+        jwt.verify(token, 'secret', (err, decoded) =>
+            err ? reject(err) : resolve(decoded)
+        );
+    })
 );
