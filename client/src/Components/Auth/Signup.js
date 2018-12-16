@@ -22,7 +22,6 @@ const Signup = ({ history }) => {
     );
 
     const postSignup = ({ signUser }) => {
-        console.log(signUser)
         if (!(signUser && signUser.id))
             return signupError();
 

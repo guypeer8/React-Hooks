@@ -90,13 +90,15 @@ const deleteCompletedTodos = user_id => (
                 .filter(({ completed }) => completed)
                 .map(({ id }) => id)
         )
-        .then(deleteTodos)
+        .then(todo_ids =>
+            deleteTodos(user_id, todo_ids)
+        )
 );
 
-const deleteTodos = todo_ids => (
+const deleteTodos = (user_id, todo_ids) => (
     Promise.all(
         todo_ids.map(todo_id =>
-            deleteTodo(todo_id)
+            deleteTodo(user_id, todo_id)
         )
     )
 );
@@ -158,7 +160,7 @@ const compareHash = (username, password) => (
                             return reject(err);
 
                         delete user.password;
-                        return resolve({
+                        resolve({
                             user,
                             match,
                         });

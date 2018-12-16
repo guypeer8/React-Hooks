@@ -34,8 +34,6 @@ export const DELETE_TODO = gql`
    mutation DELETE_TODO($user_id: ID!, $id: ID!) {
         deleteTodo(user_id: $user_id, id: $id) {
             id,
-            text,
-            completed
         }
    }
 `;
@@ -44,8 +42,6 @@ export const DELETE_COMPLETED_TODOS = gql`
    mutation DELETE_COMPLETED_TODOS($user_id: ID!) {
         deleteCompletedTodos(user_id: $user_id) {
             id,
-            text,
-            completed
         }
    }
 `;

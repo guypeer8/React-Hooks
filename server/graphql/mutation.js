@@ -68,7 +68,10 @@ const MutationType = new GraphQLObjectType({
         },
         deleteTodo: {
             type: TodoType,
-            args: { id: { type: GraphQLNonNull(GraphQLID) } },
+            args: {
+                user_id: { type: GraphQLNonNull(GraphQLID) },
+                id: { type: GraphQLNonNull(GraphQLID) },
+            },
             resolve: (_, { user_id, id }) =>
                 Redis.deleteTodo(user_id, id),
         },
