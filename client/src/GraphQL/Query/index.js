@@ -1,11 +1,10 @@
 import gql from 'graphql-tag';
 
 export const GET_USER = gql`
-    query GET_USER($id: ID!) {
-        user(id: $id) {
+    query GET_USER {
+        user {
             id,
             username,
-            password
             todos {
                 id,
                 text,
@@ -16,8 +15,8 @@ export const GET_USER = gql`
 `;
 
 export const GET_TODOS = gql`
-    query GET_TODOS($user_id: ID!) {
-        todos(user_id: $user_id) {
+    query GET_TODOS {
+        todos {
             id,
             text,
             completed

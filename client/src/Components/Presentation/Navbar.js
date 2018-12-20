@@ -6,7 +6,7 @@ import { LOGOUT_USER } from '../../GraphQL/Mutation/Auth';
 const Navbar = () => {
     const { state, dispatch } = getStore();
 
-    const logoutClient = () =>
+    const setLogout = () =>
         dispatch.auth({ type: 'LOGOUT' });
 
     return (
@@ -15,7 +15,7 @@ const Navbar = () => {
             {!state.auth.is_logged_in ? null : (
                 <Mutation
                     mutation={LOGOUT_USER}
-                    onCompleted={logoutClient}
+                    onCompleted={setLogout}
                 >
                     {(logout, { loading }) => (
                         <div className='User'>

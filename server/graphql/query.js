@@ -14,9 +14,8 @@ const RootQuery = new GraphQLObjectType({
     fields: {
         user: {
             type: UserType,
-            args: { id: { type: GraphQLID } },
-            resolve: (_, { id }) =>
-                Redis.getUser(id),
+            resolve: (_, __, { user }) =>
+                (user && user.id) ? Redis.getUser(user.id) : null,
         },
         users: {
             type: new GraphQLList(UserType),
@@ -26,17 +25,15 @@ const RootQuery = new GraphQLObjectType({
         todo: {
             type: TodoType,
             args: {
-                user_id: { type: GraphQLID },
                 todo_id: { type: GraphQLID },
             },
-            resolve: (_, { user_id, todo_id }) =>
-                Redis.getTodo(user_id, todo_id),
+            resolve: (_, { todo_id }, { user }) =>
+                Redis.getTodo(user.id, todo_id),
         },
         todos: {
             type: new GraphQLList(TodoType),
-            args: { user_id: { type: GraphQLID } },
-            resolve: (_, { user_id }) =>
-                Redis.getTodos(user_id),
+            resolve: (_, __, { user }) =>
+                Redis.getTodos(user.id),
         },
     },
 });

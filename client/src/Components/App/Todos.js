@@ -39,7 +39,7 @@ const Todos = ({ filter }) => {
         >
             {({ data: { todos }, loading, error }) => {
                 if (loading) return <div>Loading...</div>;
-                if (error) return <div>{error}</div>;
+                if (error) return <div>{error.message}</div>;
 
                 fetched_todos = true;
 
