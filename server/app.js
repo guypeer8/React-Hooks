@@ -1,9 +1,11 @@
 require('dotenv').config();
 const express = require('express');
 const GraphQLHTTP = require('express-graphql');
+const cookieParser = require('cookie-parser');
+const bodyParser = require('body-parser');
 const cors = require('cors');
 
-const schema = require('./graphql');
+const gqlSchema = require('./graphql');
 
 // Load Environment Variables
 const PROD = (process.env.NODE_ENV === 'production');
@@ -11,13 +13,30 @@ const PORT = (process.env.PORT || 8001);
 
 // Create Express App
 const app = express();
-app.use(cors());
+
+// External Middleware
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(cookieParser());
+app.use(cors({
+    credentials: true,
+    origin: 'http://localhost:3000',
+}));
+
+// Internal Middleware
+app.use(require('./routes/jwt'));
 
 // Set Up GraphQL Endpoint
-app.use('/api', GraphQLHTTP({
-    schema,
-    graphiql: !PROD,
-}));
+app.use('/api',
+    GraphQLHTTP((req, res) => ({
+        schema: gqlSchema,
+        context: {
+            res,
+            user: req.jwtDecoded,
+        },
+        graphiql: !PROD,
+    })),
+);
 
 // Listen On Port
 app.listen(PORT, err => {

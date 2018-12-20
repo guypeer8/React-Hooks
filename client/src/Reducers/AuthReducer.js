@@ -13,12 +13,10 @@ const initialState = {
 const authReducer = (auth = initialState, action) => {
     switch (action.type) {
         case 'UPDATE_USER':
+            delete action.type;
             return {
                 ...auth,
-                ...(action.id ? {id: action.id} : {}),
-                ...(action.username ? {username: action.username} : {}),
-                ...(action.password ? {password: action.password} : {}),
-                ...(action.confirm ? {confirm: action.confirm} : {}),
+                ...action,
             };
 
         case 'SET_USER':
@@ -29,7 +27,7 @@ const authReducer = (auth = initialState, action) => {
                 is_logged_in: true,
             };
 
-        case 'SET_LOGOUT':
+        case 'LOGOUT':
             return initialState;
 
         case 'SET_ERROR':

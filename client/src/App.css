@@ -9,6 +9,23 @@
   text-align: center;
 }
 
+.Navbar .User {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.Navbar .User .Logout-Button {
+  margin-left: 10px;
+  border: 0;
+  outline: none;
+  padding: 5px 8px;
+  cursor: pointer;
+}
+.Navbar .User .Logout-Button:hover {
+  opacity: 0.88;
+}
+
 .App {
   text-align: center;
   background-color: #282c34;

@@ -17,8 +17,8 @@ const Root = () => (
             <div className='App'>
                 <Router>
                     <Switch>
-                        <Route path='/signup' exact component={Signup} />
-                        <Route path='/login' exact component={Login} />
+                        <Route path='/signup' component={Signup} />
+                        <Route path='/login' component={Login} />
                         <ProtectedRoute path='/:filter?' component={App} />
                     </Switch>
                 </Router>

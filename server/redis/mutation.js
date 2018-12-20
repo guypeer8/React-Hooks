@@ -1,53 +1,47 @@
-const appRoot = require('app-root-dir').get();
+const rootDir = require('app-root-dir').get();
+const { readFileSync } = require('fs');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
-const path = require('path');
-const fs = require('fs');
+const { join } = require('path');
 
 const Redis = require('./query');
 const redisPromise = require('./config/promise');
 
-const JWT_SECRET = fs.readFileSync(path.join(appRoot, 'redis', 'config', 'secret.pem'));
+const JWT_SECRET = readFileSync(join(rootDir, 'bin', 'jwt_secret.pem'));
 
-const signUser = (username, password) => (
+const signUser = (username, password, res) => (
     existsUser(username)
-        .then(exists =>
-            exists ? null : hashPassword(password)
-        ).then(hashedPwd => {
+        .then(exists => (
+            exists
+                ? null
+                : hashPassword(password)
+        ))
+        .then(hashedPwd => {
             if (!hashedPwd)
                 return null;
 
             return redisPromise
                 .hincrby('user_id', 'id')
                 .then(id => {
-                    const token = signJWT({ id, username });
+                    setAuthCookie({ id, username }, res);
                     return redisPromise.hset('users', id, {
                         id,
                         username,
                         password: hashedPwd,
-                        token,
                     });
                 });
         })
 );
 
-const loginUser = (username, password) => (
+const loginUser = (username, password, res) => (
     compareHash(username, password)
-        .then(({ user, match }) =>
-            match ? user : null
-        )
-);
+        .then(({ user, match }) => {
+            if (!(user && match))
+                return null;
 
-const authenticateUser = token => (
-    verifyJWT(token)
-        .then(({ id, username }) => ({
-            user: { id, username },
-            authenticated: true,
-        }))
-        .catch(() => ({
-            user: null,
-            authenticated: false,
-        }))
+            setAuthCookie(user, res);
+            return user;
+        })
 );
 
 const addTodo = (user_id, text) => (
@@ -111,7 +105,6 @@ const deleteTodos = (user_id, todo_ids) => (
 module.exports = {
     signUser,
     loginUser,
-    authenticateUser,
     addTodo,
     editTodo,
     toggleTodo,
@@ -171,7 +164,8 @@ const compareHash = (username, password) => (
                         });
                     }
                 )
-            });
+            })
+            .catch(reject);
     })
 );
 
@@ -185,13 +179,11 @@ const signJWT = ({ id, username }) => {
     return token;
 };
 
-const verifyJWT = token => (
-    new Promise((resolve, reject) => {
-        jwt.verify(
-            token,
-            JWT_SECRET,
-            (err, decoded) =>
-                err ? reject(err) : resolve(decoded)
-        );
-    })
-);
+const setAuthCookie = ({ id, username }, res) => {
+    const jwtEncoded = signJWT({ id, username });
+    res.cookie('token', jwtEncoded, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        maxAge: 24 * 60 * 60 * 1000, // 1d
+    });
+};

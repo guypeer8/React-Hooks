@@ -5,7 +5,6 @@ export const SIGN_USER = gql`
       signUser(username: $username, password: $password) {
         id,
         username,
-        password
       }
     }  
 `;
@@ -15,7 +14,14 @@ export const LOGIN_USER = gql`
       loginUser(username: $username, password: $password) {
         id,
         username,
-        password
       }
     }  
+`;
+
+export const LOGOUT_USER = gql`
+    mutation LOGOUT_USER {
+        logoutUser {
+            id
+        }
+    }
 `;

@@ -20,8 +20,8 @@ const MutationType = new GraphQLObjectType({
                 username: { type: GraphQLNonNull(GraphQLString) },
                 password: { type: GraphQLNonNull(GraphQLString) },
             },
-            resolve: (_, { username, password }) =>
-                Redis.signUser(username, password),
+            resolve: (_, { username, password }, { res }) =>
+                Redis.signUser(username, password, res),
         },
         loginUser: {
             type: UserType,
@@ -29,57 +29,51 @@ const MutationType = new GraphQLObjectType({
                 username: { type: GraphQLNonNull(GraphQLString) },
                 password: { type: GraphQLNonNull(GraphQLString) },
             },
-            resolve: (_, { username, password }) =>
-                Redis.loginUser(username, password),
+            resolve: (_, { username, password }, { res }) =>
+                Redis.loginUser(username, password, res),
         },
-        authenticateUser: {
+        logoutUser: {
             type: UserType,
-            args: { token: { type: GraphQLNonNull(GraphQLString) } },
-            resolve: (_, { token }) =>
-                Redis.authenticateUser(token),
+            resolve: (_, args, { user, res }) =>
+                (user && user.id && res.clearCookie('token')),
         },
         addTodo: {
             type: TodoType,
             args: {
-                user_id: { type: GraphQLNonNull(GraphQLID) },
                 text: { type: GraphQLNonNull(GraphQLString) },
             },
-            resolve: (_, { user_id, text }) =>
-                Redis.addTodo(user_id, text),
+            resolve: (_, { text }, { user }) =>
+                Redis.addTodo(user.id, text),
         },
         editTodo: {
             type: TodoType,
             args: {
-                user_id: { type: GraphQLNonNull(GraphQLID) },
                 id: { type: GraphQLNonNull(GraphQLID) },
                 text: { type: GraphQLNonNull(GraphQLString) },
             },
-            resolve: (_, { user_id, id, text }) =>
-                Redis.editTodo(user_id, id, text),
+            resolve: (_, { id, text }, { user }) =>
+                Redis.editTodo(user.id, id, text),
         },
         toggleTodo: {
             type: TodoType,
             args: {
-                user_id: { type: GraphQLNonNull(GraphQLID) },
                 id: { type: GraphQLNonNull(GraphQLID) },
             },
-            resolve: (_, { user_id, id }) =>
-                Redis.toggleTodo(user_id, id),
+            resolve: (_, { id }, { user }) =>
+                Redis.toggleTodo(user.id, id),
         },
         deleteTodo: {
             type: TodoType,
             args: {
-                user_id: { type: GraphQLNonNull(GraphQLID) },
                 id: { type: GraphQLNonNull(GraphQLID) },
             },
-            resolve: (_, { user_id, id }) =>
-                Redis.deleteTodo(user_id, id),
+            resolve: (_, { id }, { user }) =>
+                Redis.deleteTodo(user.id, id),
         },
         deleteCompletedTodos: {
             type: new GraphQLList(TodoType),
-            args: { user_id: { type: GraphQLNonNull(GraphQLID) } },
-            resolve: (_, { user_id }) =>
-                Redis.deleteCompletedTodos(user_id),
+            resolve: (_, __, { user }) =>
+                Redis.deleteCompletedTodos(user.id),
         },
     },
 });

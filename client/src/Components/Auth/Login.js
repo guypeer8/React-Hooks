@@ -39,21 +39,21 @@ const Login = ({ history }) => {
         history.push('/signup')
     };
 
-    const updateUser = (e) => {
-        const attr = e.target.getAttribute('name');
-        const value = e.target.value;
-
-        const payload = (
-            attr === 'username'
-                ? {username: value}
-                : {password: value}
-        );
-
+    const updateUser = (value, key) => {
         dispatch.auth({
             type: 'UPDATE_USER',
-            ...payload,
+            [key]: value,
         });
     };
+
+    const FormError = ({ type }) => (
+        error.type === type
+            ? (
+                <div className='alert-danger'>
+                    {error.message}
+                </div>
+            ) : null
+    );
 
     return (
         <Mutation
@@ -75,20 +75,24 @@ const Login = ({ history }) => {
                                 name='username'
                                 placeholder='Username'
                                 value={username}
-                                onChange={updateUser}
+                                onChange={e =>
+                                    updateUser(e.target.value, 'username')
+                                }
                             />
                         </div>
-                        {error.type === 'username' ? <div className='alert-danger'>{error.message}</div> : null}
+                        <FormError type='username' />
                         <div>
                             <input
                                 type='password'
                                 name='password'
                                 placeholder='Password'
                                 value={password}
-                                onChange={updateUser}
+                                onChange={e =>
+                                    updateUser(e.target.value, 'password')
+                                }
                             />
                         </div>
-                        {error.type === 'password' ? <div className='alert-danger'>{error.message}</div> : null}
+                        <FormError type='password' />
                         <div>
                             <button
                                 type='submit'
