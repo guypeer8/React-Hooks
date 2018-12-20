@@ -4,12 +4,7 @@ export const GET_USER = gql`
     query GET_USER {
         user {
             id,
-            username,
-            todos {
-                id,
-                text,
-                completed
-            }
+            username
         }
     }
 `;
