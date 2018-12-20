@@ -1,13 +1,13 @@
+import React from "react";
+import { Query } from "react-apollo";
+import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 import Navbar from "./Presentation/Navbar";
-import {Query} from "react-apollo";
-import {GET_USER} from "../GraphQL/Query";
-import {BrowserRouter as Router, Route, Switch} from "react-router-dom";
+import { GET_USER } from "../GraphQL/Query";
 import Signup from "./Auth/Signup";
 import Login from "./Auth/Login";
 import ProtectedRoute from "./Auth/ProtectedRoute";
-import {App} from "../App";
-import React from "react";
-import {getStore} from "./Providers/Store";
+import { App } from "../App";
+import { getStore } from "./Providers/Store";
 
 let fetched_user = false;
 

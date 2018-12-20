@@ -16,8 +16,8 @@ const UserType = new GraphQLObjectType({
         password: { type: GraphQLString },
         todos: {
             type: new GraphQLList(TodoType),
-            resolve: ({ id }) =>
-                Redis.getTodos(id),
+            resolve: (_, __, { user }) =>
+                Redis.getTodos(user.id),
         },
     }),
 });
