@@ -1,34 +1,78 @@
-const todosReducer = (todos = [], action) => {
+const initialState = {
+    data: [],
+    fetched: false,
+};
+
+const todosReducer = (state = initialState, action) => {
     switch (action.type) {
+        case 'SET_FETCHED':
+            return {
+                ...state,
+                fetched: true,
+            };
+
+        case 'SET_UNFETCHED':
+            return {
+                ...state,
+                fetched: false,
+            };
+
         case 'APPEND_TODOS':
-            return [...todos, ...action.todos];
+            return {
+                ...state,
+                data: [
+                    ...state.data,
+                    ...action.todos,
+                ],
+            };
 
         case 'ADD_TODO':
             const { id, text, completed } = action;
-            return [...todos, {id, text, completed}];
+            return {
+                ...state,
+                data: [
+                    ...state.data,
+                    {id, text, completed},
+                ],
+            };
 
         case 'EDIT_TODO':
-            return todos.map(todo =>
-                todo.id === action.id
-                    ? {...todo, text: action.text}
-                    : todo
-            );
+            return {
+                ...state,
+                data: state.data.map(todo =>
+                    todo.id === action.id
+                        ? {...todo, text: action.text}
+                        : todo
+                ),
+            };
 
         case 'TOGGLE_TODO':
-            return todos.map(todo =>
-                todo.id === action.id
-                    ? {...todo, completed: !todo.completed}
-                    : todo
-            );
+            return {
+                ...state,
+                data: state.data.map(todo =>
+                    todo.id === action.id
+                        ? {...todo, completed: !todo.completed}
+                        : todo
+                ),
+            };
 
         case 'DELETE_TODO':
-            return todos.filter(({id}) => id !== action.id);
+            return {
+                ...state,
+                data: state.data.filter(({id}) => id !== action.id),
+            };
 
         case 'DELETE_COMPLETED':
-            return todos.filter(({completed}) => !completed);
+            return {
+                ...state,
+                data: state.data.filter(({completed}) => !completed),
+            };
+
+        case 'CLEAR_TODOS':
+            return initialState;
 
         default:
-            return todos;
+            return initialState;
     }
 };
 

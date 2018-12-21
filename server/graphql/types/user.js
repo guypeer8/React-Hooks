@@ -5,7 +5,6 @@ const {
     GraphQLID,
 } = require('graphql');
 
-const Redis = require('../../redis/query');
 const TodoType = require('./todo');
 
 const UserType = new GraphQLObjectType({
@@ -16,8 +15,8 @@ const UserType = new GraphQLObjectType({
         password: { type: GraphQLString },
         todos: {
             type: new GraphQLList(TodoType),
-            resolve: (_, __, { user }) =>
-                Redis.getTodos(user.id),
+            resolve: (_, __, { user, dataLoaders: { todosLoader } }) =>
+                todosLoader.load(`todos:${user.id}`),
         },
     }),
 });

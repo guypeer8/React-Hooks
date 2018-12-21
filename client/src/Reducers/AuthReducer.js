@@ -8,6 +8,7 @@ const initialState = {
         type: '',
     },
     is_logged_in: false,
+    logged_out: false,
 };
 
 const authReducer = (auth = initialState, action) => {
@@ -25,10 +26,14 @@ const authReducer = (auth = initialState, action) => {
                 id: action.id,
                 username: action.username,
                 is_logged_in: true,
+                logged_out: false,
             };
 
         case 'LOGOUT':
-            return initialState;
+            return {
+                ...initialState,
+                logged_out: true,
+            };
 
         case 'SET_ERROR':
             return {

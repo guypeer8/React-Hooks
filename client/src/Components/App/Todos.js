@@ -4,13 +4,11 @@ import Todo from './Todo';
 import { getStore } from '../Providers/Store';
 import { GET_TODOS } from '../../GraphQL/Query';
 
-let fetched_todos = false;
-
 const Todos = ({ filter }) => {
     const { state, dispatch } = getStore();
 
-    if (fetched_todos) {
-        const visibleTodos = getVisibleTodos(state.todos, filter);
+    if (state.todos.fetched) {
+        const visibleTodos = getVisibleTodos(state.todos.data, filter);
         if (visibleTodos.length === 0)
             return null;
 
@@ -41,8 +39,7 @@ const Todos = ({ filter }) => {
                 if (loading) return <div>Loading...</div>;
                 if (error) return <div>{error.message}</div>;
 
-                fetched_todos = true;
-
+                dispatch.todos({ type: 'SET_FETCHED' });
                 dispatch.todos({
                     type: 'APPEND_TODOS',
                     todos,

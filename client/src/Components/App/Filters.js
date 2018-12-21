@@ -16,10 +16,10 @@ const Filters = ({ filter }) => {
         isActive(fltr) && e.preventDefault();
 
     const countActiveTodos = () =>
-        state.todos.filter(({completed}) => !completed).length;
+        state.todos.data.filter(({completed}) => !completed).length;
 
     const countCompletedTodos = () =>
-        state.todos.filter(({completed}) => completed).length;
+        state.todos.data.filter(({completed}) => completed).length;
 
     const active_todos = countActiveTodos();
     const completed_todos = countCompletedTodos();

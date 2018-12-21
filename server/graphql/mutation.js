@@ -34,7 +34,7 @@ const MutationType = new GraphQLObjectType({
         },
         logoutUser: {
             type: UserType,
-            resolve: (_, args, { user, res }) =>
+            resolve: (_, __, { user, res }) =>
                 (user && user.id && res.clearCookie('token')),
         },
         addTodo: {

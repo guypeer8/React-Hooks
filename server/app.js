@@ -6,6 +6,7 @@ const bodyParser = require('body-parser');
 const cors = require('cors');
 
 const gqlSchema = require('./graphql');
+const dataLoaders = require('./dataloaders');
 
 // Load Environment Variables
 const PROD = (process.env.NODE_ENV === 'production');
@@ -33,6 +34,7 @@ app.use('/api',
         context: {
             res,
             user: req.jwtDecoded,
+            dataLoaders,
         },
         graphiql: !PROD,
     })),

@@ -9,8 +9,6 @@ import ProtectedRoute from "./Auth/ProtectedRoute";
 import { App } from "../App";
 import { getStore } from "./Providers/Store";
 
-let fetched_user = false;
-
 const AppRouter = () => (
     <Router>
         <Switch>
@@ -22,7 +20,7 @@ const AppRouter = () => (
 );
 
 const Index = () => {
-    const { dispatch } = getStore();
+    const { state, dispatch } = getStore();
 
     const setUser = ({ id, username }) => {
         dispatch.auth({
@@ -32,27 +30,31 @@ const Index = () => {
         });
     };
 
+    console.warn(JSON.stringify(state, null, 2))
+
     return (
         <div>
             <Navbar />
             <div className='App'>
-                {fetched_user ? <AppRouter/> : (
-                    <Query query={GET_USER}>
-                        {({ data, loading, error }) => {
-                            if (loading) return <div>Loading...</div>;
-                            if (error) return <div>{error.message}</div>;
+                {
+                    (state.auth.is_logged_in || state.auth.logged_out)
+                        ? <AppRouter/>
+                        : (
+                            <Query query={GET_USER}>
+                                {({ data, loading, error }) => {
+                                    if (loading) return <div>Loading...</div>;
+                                    if (error) return <div>{error.message}</div>;
 
-                            fetched_user = true;
+                                    if (data && data.user && data.user.id) {
+                                        setUser(data.user);
+                                        return null;
+                                    }
 
-                            if (data && data.user && data.user.id) {
-                                setUser(data.user);
-                                return null;
-                            }
-
-                            return <AppRouter/>;
-                        }}
-                    </Query>
-                )}
+                                    return <AppRouter/>;
+                                }}
+                            </Query>
+                        )
+                }
             </div>
         </div>
     );
