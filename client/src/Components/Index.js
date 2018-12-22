@@ -30,8 +30,6 @@ const Index = () => {
         });
     };
 
-    console.warn(JSON.stringify(state, null, 2))
-
     return (
         <div>
             <Navbar />

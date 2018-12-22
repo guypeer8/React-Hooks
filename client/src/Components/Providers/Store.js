@@ -2,31 +2,18 @@ import React, {createContext, useContext, useReducer} from 'react';
 import todoInputReducer from '../../Reducers/TodoInputReducer';
 import todosReducer from '../../Reducers/TodosReducer';
 import authReducer from '../../Reducers/AuthReducer';
+import {
+    AUTH as initialAuthState,
+    TODO_INPUT as initialTodoInputState,
+    TODOS as initialTodosState,
+} from '../../Reducers/InitialState';
 
 const StoreContext = createContext(null);
 
 const StoreProvider = ({ children }) => {
-    const [auth, dispatchAuth] = useReducer(authReducer, {
-        username: '',
-        password: '',
-        confirm: '',
-        error: {
-            type: '',
-            message: '',
-        },
-        is_logged_in: false,
-        logged_out: false,
-    });
-
-    const [todos, dispatchTodos] = useReducer(todosReducer, {
-        data: [],
-        fetched: false,
-    });
-
-    const [todoInput, dispatchTodoInput] = useReducer(todoInputReducer, {
-        id: null,
-        text: '',
-    });
+    const [auth, dispatchAuth] = useReducer(authReducer, initialAuthState);
+    const [todos, dispatchTodos] = useReducer(todosReducer, initialTodosState);
+    const [todoInput, dispatchTodoInput] = useReducer(todoInputReducer, initialTodoInputState);
 
     const store = {
         state: {

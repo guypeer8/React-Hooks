@@ -1,7 +1,4 @@
-const initialState = {
-    data: [],
-    fetched: false,
-};
+import { TODOS as initialState } from './InitialState';
 
 const todosReducer = (state = initialState, action) => {
     switch (action.type) {

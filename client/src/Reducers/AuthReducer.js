@@ -1,15 +1,4 @@
-const initialState = {
-    id: null,
-    username: '',
-    password: '',
-    confirm: '',
-    error: {
-        message: '',
-        type: '',
-    },
-    is_logged_in: false,
-    logged_out: false,
-};
+import { AUTH as initialState } from './InitialState';
 
 const authReducer = (auth = initialState, action) => {
     switch (action.type) {

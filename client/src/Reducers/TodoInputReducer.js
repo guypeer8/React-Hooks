@@ -1,7 +1,4 @@
-const initialState = {
-    id: null,
-    text: '',
-};
+import { TODO_INPUT as initialState } from './InitialState';
 
 const todoInputReducer = (todoInput = initialState, action) => {
     switch (action.type) {
