@@ -16,36 +16,40 @@ const Navbar = () => {
         dispatch.todoInput({ type: 'CLEAR_TODO' });
     };
 
+    const Logout = apolloClient => (
+        <Mutation
+            mutation={LOGOUT_USER}
+            onCompleted={() =>
+                setLogout(apolloClient)
+            }
+        >
+            {(logout, { loading }) => (
+                <Router>
+                    <div className='User'>
+                        <span>
+                            Hello <strong>{state.auth.username}</strong>!
+                        </span>
+                        <NavLink to='/login'>
+                            <button
+                                onClick={logout}
+                                disabled={loading}
+                                className='Logout-Button'
+                            >
+                                Logout
+                            </button>
+                        </NavLink>
+                    </div>
+                </Router>
+            )}
+        </Mutation>
+    );
+
     return (
         <div className='Navbar'>
             <span>React Hooks - Todo App</span>
             {!state.auth.is_logged_in ? null : (
                 <ApolloConsumer>
-                    {client => (
-                        <Mutation
-                            mutation={LOGOUT_USER}
-                            onCompleted={() => setLogout(client)}
-                        >
-                            {(logout, { loading }) => (
-                                <Router>
-                                    <div className='User'>
-                                        <span>
-                                            Hello <strong>{state.auth.username}</strong>!
-                                        </span>
-                                        <NavLink to='/login'>
-                                            <button
-                                                onClick={logout}
-                                                    disabled={loading}
-                                                    className='Logout-Button'
-                                            >
-                                                Logout
-                                            </button>
-                                        </NavLink>
-                                    </div>
-                                </Router>
-                            )}
-                        </Mutation>
-                    )}
+                    {Logout}
                 </ApolloConsumer>
             )}
         </div>
